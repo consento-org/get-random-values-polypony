@@ -1,3 +1,9 @@
+let node8 = false
+
+if ('process' in global) {
+  node8 = /^v8\./.test(global.process.version)
+}
+
 module.exports = function init (window) {
   function execGlobal (name, value) {
     return window[name](value)
@@ -60,6 +66,34 @@ module.exports = function init (window) {
       input[i] = bytes[i] - 0x80
     }
     return input
+  }
+
+  if (node8) {
+    return function randomFillNode8 (input) {
+      if (input instanceof Uint8Array) {
+        return crypto.randomFillSync(input)
+      }
+      const bytes = crypto.randomBytes(input.byteLength)
+      if (input instanceof Uint32Array) {
+        return randomFillUint32(input, bytes)
+      }
+      if (input instanceof Uint16Array) {
+        return randomFillUint16(input, bytes)
+      }
+      if (input instanceof Int32Array) {
+        return randomFillInt32(input, bytes)
+      }
+      if (input instanceof Int16Array) {
+        return randomFillInt16(input, bytes)
+      }
+      if (input instanceof Int8Array) {
+        return randomFillInt8(input, bytes)
+      }
+      if (input instanceof Uint8ClampedArray) {
+        return randomFillUint8(input, bytes)
+      }
+      throw new Error('invalid type')
+    }
   }
 
   return crypto.randomFillSync || function randomFillClassic (input) {
