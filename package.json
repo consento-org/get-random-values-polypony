@@ -1,6 +1,6 @@
 {
   "name": "@consento/sync-randombytes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Synchronous randombytes function that works in node, the browser & react-native!",
   "main": "index.js",
   "scripts": {
