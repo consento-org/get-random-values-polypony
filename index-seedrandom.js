@@ -17,11 +17,14 @@ function strs2ab (strs) {
 
 module.exports = function init (window) {
   const seedrandom = require('seedrandom/seedrandom.js')
+  function execGlobal (name, value) {
+    return window[name](value)
+  }
 
   let SyncRandomBytes
   let seed
   try {
-    SyncRandomBytes = require('react' + '-native').NativeModules.SyncRandomBytes
+    SyncRandomBytes = execGlobal('require', 'react-native').NativeModules.SyncRandomBytes
     if (SyncRandomBytes) {
       seed = SyncRandomBytes.seed
     }

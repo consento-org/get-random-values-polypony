@@ -19,6 +19,9 @@
   "author": "Martin Heidegger <martin.heidegger@gmail.com>",
   "nativePackage": true,
   "license": "MIT",
+  "optionalDependencies": {
+    "react-native": "*"
+  },
   "dependencies": {
     "buffer": "^5.4.3",
     "seedrandom": "^3.0.5"
