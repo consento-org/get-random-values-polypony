@@ -1,7 +1,5 @@
-import { Buffer } from 'buffer'
-
 declare module '@consento/sync-randombytes' {
-  const cmd: <T extends Uint8Array | Buffer>(input: T) => T;
-  export default cmd
-}
+  import { Buffer } from 'buffer'
 
+  export default function <T extends Uint8Array | Buffer>(input: T): T;
+}
