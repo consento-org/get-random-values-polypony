@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+let browser = process.argv[2]
+
+if (!browser) {
+  browser = 'firefox'
+}
+
+if (browser === 'firefox') {
+  require('geckodriver')
+} else if (browser === 'chrome') {
+  require('chromedriver')
+} else {
+  throw new Error(`Unknown browser: ${browser}`)
+}
+
+const selenium = require('./selenium-system.js')
+
+selenium(builder => builder.forBrowser(browser))
+  .then(
+    failed => process.exit(failed ? 1 : 0),
+    err => {
+      console.error(err)
+      process.exit(2)
+    }
+  )

@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+const userName = process.env.BROWSERSTACK_USER
+const accessKey = process.env.BROWSERSTACK_ACCESS_KEY
+
+if (!userName) {
+  throw new Error('process.env.BROWSERSTACK_USER is required to run browserstack e2e tests')
+}
+
+if (!accessKey) {
+  throw new Error('process.env.BROWSERSTACK_ACCESS_KEY is required to run browserstack e2e tests')
+}
+
+const browserstackURL = `https://${userName}:${accessKey}@hub-cloud.browserstack.com/wd/hub`
+
+// Input capabilities
+const capabilities = {
+  name: '@consento/sync-randombytes',
+  build: process.env.GITHUB_RUN_ID || 'dirty',
+  os: 'Windows',
+  os_version: '7',
+  browserName: 'Internet Explorer',
+  browser_version: '10',
+  'browserstack.console': 'verbose',
+  'browserstack.video': false,
+  'browserstack.debug': true
+}
+
+const selenium = require('./selenium-system.js')
+
+selenium(
+  builder => builder
+    .usingServer(browserstackURL)
+    .withCapabilities(capabilities)
+).then(
+  failed => {
+    process.exit(failed ? 1 : 0)
+  },
+  err => {
+    console.error(err)
+    process.exit(2)
+  }
+)

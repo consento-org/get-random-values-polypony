@@ -2,11 +2,17 @@
   "name": "@consento/sync-randombytes",
   "version": "1.0.5",
   "description": "Synchronous randombytes function that works in node, the browser & react-native!",
-  "main": "index.js",
+  "main": "node.js",
+  "private": true,
+  "browser": "browser.js",
   "scripts": {
     "ci": "npm run lint && npm run test",
     "lint": "standard",
-    "test": "node test/index.js"
+    "build": "./build.sh",
+    "test:unit": "./e2e/node '../test'",
+    "test:browser:local": "./e2e/browser-local",
+    "test:browser:stack": "./e2e/browser-stack",
+    "test:node": "./e2e/node '../dist/test'"
   },
   "keywords": [
     "react-native",
@@ -19,10 +25,16 @@
   "author": "Martin Heidegger <martin.heidegger@gmail.com>",
   "nativePackage": true,
   "license": "MIT",
-  "dependencies": {
-    "seedrandom": "^3.0.5"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@leichtgewicht/quickhost": "^1.0.0",
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-preset-minify": "^0.5.1",
+    "browserify": "^16.5.1",
+    "chromedriver": "^83.0.0",
+    "geckodriver": "^1.19.1",
+    "selenium-webdriver": "^4.0.0-alpha.7",
     "standard": "^14.3.4",
     "tape": "^5.0.0"
   },

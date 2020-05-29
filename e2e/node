@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+const crypto = require('crypto')
+const randomName = crypto.randomFillSync
+  ? (/^v8\./.test(process.version)
+    ? 'getRandomValuesNodeEq8'
+    : 'getRandomValuesNodeGt8'
+  )
+  : 'getRandomValuesNodeLt8'
+
+require(process.argv[2])(randomName, false)
