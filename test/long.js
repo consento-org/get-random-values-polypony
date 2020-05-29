@@ -1,6 +1,6 @@
 const test = require('tape')
-const { add, subtract, negate, and, multiply, xor, not, shiftLeft, shiftRight, shiftRightUnsigned, compare, isZero, isOdd, toNumber, fromInt, fromNumber, lt } = require('../long.js')
-const verbose = false
+const { add, subtract, negate, and, multiply, xor, not, shiftLeft, shiftRight, shiftRightUnsigned, compare, isZero, isOdd, toNumber, fromInt, fromNumber, lt, fromFloat } = require('../long.js')
+const verbose = true
 const TMP = fromInt(0, false)
 
 function numbers (array) {
@@ -252,7 +252,7 @@ const ADD_RESULTS = numbers([
   0xd634e2db, 0xb776d5f4
 ])
 
-const SUBSTRACT_RESULTS = numbers([
+const SUBTRACT_RESULTS = numbers([
   0x00000000, 0x00000000, 0xc8892a0a, 0xa9cb1d25, 0x80100000, 0x00000001,
   0x80100000, 0x00000000, 0x80010000, 0x00000001, 0x80010000, 0x00000000,
   0x80000001, 0x00000001, 0x80000001, 0x00000000, 0x80000000, 0x01000001,
@@ -867,31 +867,33 @@ const MULTIPLY_RESULTS = numbers([
 ])
 
 function toStr (long) {
-  return verbose && `{low:${long.low},high:${long.high}}`
+  return verbose && '{low:' + long.low + ',high:' + long.high + '}'
 }
 
-test('negate', t => {
-  const negBits = (low, high, unsigned) => negate({ low, high }, TMP, unsigned)
-  const negInt = (num, unsigned) => negate(fromInt(num, unsigned), TMP, unsigned)
+test('negate', function (t) {
+  const negBits = function (low, high, unsigned) { return negate({ low, high }, TMP, unsigned) }
+  const negInt = function (num, unsigned) { return negate(fromInt(num, unsigned), TMP, unsigned) }
   t.deepEquals(negInt(1), fromInt(-1), verbose && 'negate(1)')
   t.deepEquals(negInt(-1), fromInt(1), verbose && 'negate(-1)')
   t.deepEquals(negBits(1446306523, -1216948747, false), { low: -1446306523, high: 1216948746 })
   t.end()
 })
 
-test('isZero', t => {
+test('is*', function (t) {
+  const result = {}
+  const expected = {}
   for (const long of NUMBERS) {
-    const expected = long.low === 0 && long.high === 0
-    t.equals(isZero(long), expected, verbose && `isZero(${toStr(long)}) to be ${expected}`)
+    const longStr = toStr(long)
+    result[longStr] = {
+      isZero: isZero(long),
+      isOdd: isOdd(long)
+    }
+    expected[longStr] = {
+      isZero: long.low === 0 && long.high === 0,
+      isOdd: (long.low & 1) !== 0
+    }
   }
-  t.end()
-})
-
-test('isOdd', t => {
-  for (const long of NUMBERS) {
-    const expected = (long.low & 1) !== 0
-    t.equals(isOdd(long), expected, verbose && `isOdd(${toStr(long)}) to be ${expected}`)
-  }
+  t.deepEquals(result, expected, 'is* operations')
   t.end()
 })
 
@@ -899,117 +901,88 @@ test('isOdd', t => {
 // into a number of test functions that will be run separately by jsunit. This
 // is necessary because, in some testing configurations, the full combined test
 // can take so long that it times out. These smaller tests run much faster.
-test('compare', t => {
+test('compare', function (t) {
   for (let i = 0; i < NUMBERS.length; i++) {
     const longI = NUMBERS[i]
+    const result = {}
+    const expected = {}
     for (let j = 0; j < NUMBERS.length; j++) {
       const longJ = NUMBERS[j]
-      const expectedEquals = i === j ? 0 : i < j ? -1 : 1
-      t.equals(compare(longI, longJ, false), expectedEquals, verbose && `compare(${toStr(longI)}, ${toStr(longJ)}, false) to be ${expectedEquals}`)
-      const expectedLT = i < j
-      t.equals(expectedLT, lt(longI, longJ, false), verbose && `lt(${toStr(longI)}, ${toStr(longJ)}) !== ${expectedLT}`)
-    }
-  }
-  t.end()
-})
-
-test('add', t => {
-  let count = 0
-  for (var i = 0; i < NUMBERS.length; i++) {
-    const long = NUMBERS[i]
-    const longStr = toStr(long)
-    for (var j = 0; j < i; j++) {
-      const other = NUMBERS[j]
-      const otherStr = toStr(other)
-      const expected = ADD_RESULTS[count]
-      t.deepEquals(add(long, other, TMP), expected, verbose && `#${count} - add(${longStr}, ${otherStr})`)
-      count++
-    }
-  }
-  t.end()
-})
-
-test('subtract', t => {
-  let count = 0
-  for (const long of NUMBERS) {
-    const longStr = toStr(long)
-    for (const other of NUMBERS) {
-      const otherStr = toStr(other)
-      const expected = SUBSTRACT_RESULTS[count]
-      t.deepEquals(subtract(long, other, TMP, false), expected, verbose && `#${count} - subtract(${longStr}, ${otherStr}, false)`)
-      count++
-    }
-  }
-  t.end()
-})
-
-test('bit operations', t => {
-  for (const long of NUMBERS) {
-    const longStr = toStr(long)
-    t.deepEquals({ low: ~long.low, high: ~long.high }, not(long, TMP), verbose && `~${longStr}`)
-    for (const other of NUMBERS) {
-      const otherStr = toStr(other)
-      t.deepEquals({ low: long.low & other.low, high: long.high & other.high }, and(long, other, TMP), verbose && `${longStr}&${otherStr}`)
-      // t.deepEquals({ low: long.low | other.low, high: long.high | other.high }, or(long, other, TMP), verbose && `${longStr}|${otherStr}`)
-      t.deepEquals({ low: long.low ^ other.low, high: long.high ^ other.high }, xor(long, other, TMP), verbose && `${longStr}^${otherStr}`)
-    }
-    t.deepEquals(shiftLeft(long, 0, TMP), long, verbose && `<<0${longStr}`)
-    t.deepEquals(shiftRight(long, 0, TMP), long, verbose && `>>0${longStr}`)
-    t.deepEquals(shiftRightUnsigned(long, 0, TMP), long, verbose && `>>u0${longStr}`)
-
-    for (let len = 1; len < 64; ++len) {
-      if (len < 32) {
-        t.deepEquals(
-          shiftLeft(long, len, TMP),
-          { high: (long.high << len) | (long.low >>> (32 - len)), low: long.low << len },
-          verbose && `<<${len}${longStr}`
-        )
-        t.deepEquals(
-          shiftRight(long, len, TMP),
-          { high: (long.high >> len), low: (long.low >>> len) | (long.high << (32 - len)) },
-          verbose && `>>${len}${longStr}`
-        )
-        t.deepEquals(
-          shiftRightUnsigned(long, len, TMP),
-          { high: (long.high >>> len), low: (long.low >>> len) | (long.high << (32 - len)) },
-          verbose && `>>u${len}${longStr}`
-        )
-      } else {
-        t.deepEquals(
-          shiftLeft(long, len, TMP),
-          { high: long.low << (len - 32), low: 0 },
-          verbose && `<<${len}${longStr}`
-        )
-        t.deepEquals(
-          shiftRight(long, len, TMP),
-          { high: long.high >= 0 ? 0 : -1, low: long.high >> (len - 32) },
-          verbose && `<<${len}${longStr}`
-        )
-        t.deepEquals(
-          shiftRightUnsigned(long, len, TMP),
-          { high: 0, low: len === 32 ? long.high : long.high >>> (len - 32) },
-          verbose && `<<u${len}${longStr}`
-        )
+      const longJStr = toStr(longJ)
+      result[longJStr] = {
+        compare: compare(longI, longJ, false),
+        lt: lt(longI, longJ, false)
+      }
+      expected[longJStr] = {
+        compare: i === j ? 0 : i < j ? -1 : 1,
+        lt: i < j
       }
     }
-    t.deepEquals(shiftLeft(long, 64, TMP), long, verbose && `<<64${longStr}`)
-    t.deepEquals(shiftRight(long, 64, TMP), long, verbose && `>>64${longStr}`)
-    t.deepEquals(shiftRightUnsigned(long, 64, TMP), long, verbose && `>>u64${longStr}`)
+    t.deepEquals(result, expected, verbose && 'compare/lt(' + toStr(longI))
   }
   t.end()
 })
 
-test('from number', t => {
-  t.deepEquals(fromNumber(1, TMP, false), { low: 1, high: 0 }, verbose && 'fromNumber(1, false)')
-  t.deepEquals(fromNumber(-1, TMP, false), { low: -1, high: -1 }, verbose && 'fromNumber(-1, false)')
-  t.deepEquals(fromNumber(1, TMP, true), { low: 1, high: 0 }, verbose && 'fromNumber(1, true)')
-  t.deepEquals(fromNumber(-1, TMP, true), { low: 0, high: 0 }, verbose && 'fromNumber(-1, true)')
-  t.deepEquals(fromNumber(-4.7223662013946685e+21, {}, false), { low: 0, high: -2147483648 })
-  // TODO: edge cases
+test('bit operations', function (t) {
+  let result
+  let expected
+  for (const long of NUMBERS) {
+    result = {
+      not: not(long, TMP)
+    }
+    expected = {
+      not: { low: ~long.low, high: ~long.high }
+    }
+    const longStr = toStr(long)
+    for (const other of NUMBERS) {
+      const otherStr = toStr(other)
+      result['& ' + otherStr] = and(long, other, {})
+      expected['& ' + otherStr] = { low: long.low & other.low, high: long.high & other.high }
+      // result['| ' + otherStr] = or(long, other, {})
+      result['^ ' + otherStr] = xor(long, other, {})
+      expected['^ ' + otherStr] = { low: long.low ^ other.low, high: long.high ^ other.high }
+    }
+    shiftOps(long, 0, {
+      shiftLeft: long,
+      shiftRight: long,
+      shiftRightUnsigned: long
+    })
+
+    for (let len = 1; len < 64; ++len) {
+      shiftOps(long, len, (len < 32)
+        ? {
+          shiftLeft: { high: (long.high << len) | (long.low >>> (32 - len)), low: long.low << len },
+          shiftRight: { high: (long.high >> len), low: (long.low >>> len) | (long.high << (32 - len)) },
+          shiftRightUnsigned: { high: (long.high >>> len), low: (long.low >>> len) | (long.high << (32 - len)) }
+        }
+        : {
+          shiftLeft: { high: long.low << (len - 32), low: 0 },
+          shiftRight: { high: long.high >= 0 ? 0 : -1, low: long.high >> (len - 32) },
+          shiftRightUnsigned: { high: 0, low: len === 32 ? long.high : long.high >>> (len - 32) }
+        }
+      )
+    }
+    shiftOps(long, 64, {
+      shiftLeft: long,
+      shiftRight: long,
+      shiftRightUnsigned: long
+    })
+    t.deepEquals(result, expected, verbose && 'shift operations for ' + longStr)
+  }
   t.end()
+
+  function shiftOps (long, len, shiftExpected) {
+    const key = 'shift(' + len + ')'
+    result[key] = {
+      shiftLeft: shiftLeft(long, len, {}),
+      shiftRight: shiftRight(long, len, {}),
+      shiftRightUnsigned: shiftRightUnsigned(long, len, {})
+    }
+    expected[key] = shiftExpected
+  }
 })
 
-test('to number', t => {
+test('to number', function (t) {
   t.equals(toNumber({ low: 0, high: 1 }, false), 4294967296, verbose && 'toNumber({low: 0, high: 1}, false)')
   t.equals(toNumber({ low: 2, high: 2 }, false), 8589934594, verbose && 'toNumber({low: 0, high: 1}, false)')
   t.equals(toNumber({ low: 16777215, high: 0 }, false), 16777215, verbose && 'toNumber({low: 0, high: 1}, false)')
@@ -1018,17 +991,64 @@ test('to number', t => {
   t.end()
 })
 
-test('multiply', t => {
+test('add, subtract, multiply', function (t) {
   let count = 0
-  for (let i = 0; i < NUMBERS.length; i++) {
+  for (var i = 0; i < NUMBERS.length; i++) {
     const long = NUMBERS[i]
     const longStr = toStr(long)
-    for (let j = 0; j < i; j++) {
+    const result = {}
+    const expected = {}
+    for (var j = 0; j < i; j++) {
       const other = NUMBERS[j]
       const otherStr = toStr(other)
-      t.deepEquals(multiply(long, other, TMP, false), MULTIPLY_RESULTS[count], verbose && `#${count}[${i}/${j}] multiply(${longStr}, ${otherStr}, false)`)
+      result[otherStr] = {
+        add: add(long, other, { low: 0, high: 0 }),
+        multiply: multiply(long, other, { low: 0, high: 0 }, false)
+      }
+      expected[otherStr] = {
+        add: ADD_RESULTS[count],
+        multiply: MULTIPLY_RESULTS[count]
+      }
       count++
     }
+    t.deepEquals(result, expected, verbose && '#' + i + ' add/multiply(' + longStr + ', x, false)')
   }
+  t.end()
+})
+
+test('subtract', function (t) {
+  let count = 0
+  for (var i = 0; i < NUMBERS.length; i++) {
+    const long = NUMBERS[i]
+    const longStr = toStr(long)
+    const result = {}
+    const expected = {}
+    for (const other of NUMBERS) {
+      const otherStr = toStr(other)
+      result[otherStr] = subtract(long, other, { low: 0, high: 0 }, false)
+      expected[otherStr] = SUBTRACT_RESULTS[count]
+      count++
+    }
+    t.deepEquals(result, expected, verbose && '#' + i + ' subtract(' + longStr + ', x, false)')
+  }
+  t.end()
+})
+
+test('from number', function (t) {
+  t.deepEquals(fromNumber(1, TMP, false), { low: 1, high: 0 }, verbose && 'fromNumber(1, false)')
+  t.deepEquals(fromNumber(-1, TMP, false), { low: -1, high: -1 }, verbose && 'fromNumber(-1, false)')
+  t.deepEquals(fromNumber(1, TMP, true), { low: 1, high: 0 }, verbose && 'fromNumber(1, true)')
+  t.deepEquals(fromNumber(-1, TMP, true), { low: 0, high: 0 }, verbose && 'fromNumber(-1, true)')
+  t.deepEquals(fromNumber(-4.7223662013946685e+21, {}, false), { low: 0, high: -2147483648 }, verbose && 'from(-4.7223662013946685e+21, false)')
+  t.deepEquals(fromNumber(0.5, TMP, true), { low: 0, high: 0 }, verbose && 'floating points get dropped')
+  // TODO: edge cases
+  t.end()
+})
+
+test('from float', function (t) {
+  t.deepEquals(fromFloat(0.5, TMP), { low: 0, high: 1071644672 }, verbose && 'fromFloats(0.5, 0)')
+  t.deepEquals(fromFloat(123131415.1123415, TMP), { low: 1551042982, high: 1100831576 }, verbose && 'fromFloats(123131415.1123415, 123.1131)')
+  t.deepEquals(fromFloat(-0.5, TMP), { low: 0, high: 3219128320 }, verbose && 'fromFloats(-0.5, 0)')
+  // TODO: edge cases
   t.end()
 })

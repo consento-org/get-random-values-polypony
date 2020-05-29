@@ -15,6 +15,9 @@ const TMP_MULTI1 = fromInt(0)
 const TMP_MULTI2 = fromInt(0)
 const TMP_SUBTRACT = fromInt(0)
 const TMP_NEGATE = fromInt(0)
+const TMP_CONVERT_BUFFER = new ArrayBuffer(8)
+const TMP_CONVERT_FLOAT = new Float64Array(TMP_CONVERT_BUFFER)
+const TMP_CONVERT_INT = new Uint32Array(TMP_CONVERT_BUFFER)
 
 function fromInt (value, unsigned) {
   if (unsigned) {
@@ -48,48 +51,12 @@ function isNegative (long, unsigned) {
   return !unsigned && long.high < 0
 }
 
-/*
-function toString (long) {
-  radix = radix || 10
-  if (radix < 2 || 36 < radix) {
-    throw RangeError('radix')
-  }
-  if (isZero(long)) {
-    return '0'
-  }
-  if (isNegative(long)) {
-    if (this.eq(MIN_VALUE)) {
-      // We need to change the Long value before it can be negated, so we remove
-      // the bottom-most digit in this base and then recurse to do the rest.
-      var radixLong = fromNumber(radix)
-      const div = divison(long, radixLong)
-      const rem1 = multiply(div, radixLong).sub(this);
-      return toString(div, radix) + toInt(rem1).toString(radix)
-    } else
-      return '-' + toString(negate(long, TMP_TOSTRING), radix)
-    }
-  }
-
-  // Do several (6) digits each time through the loop, so as to
-  // minimize the calls to the very expensive emulated div.
-  var radixToPower = fromNumber(pow_dbl(radix, 6), this.unsigned),
-      rem = this;
-  var result = '';
-  while (true) {
-      var remDiv = rem.div(radixToPower),
-          intval = rem.sub(remDiv.mul(radixToPower)).toInt() >>> 0,
-          digits = intval.toString(radix);
-      rem = remDiv;
-      if (rem.isZero())
-          return digits + result;
-      else {
-          while (digits.length < 6)
-              digits = '0' + digits;
-          result = '' + digits + result;
-      }
-  }
+function fromFloat (float, target) {
+  TMP_CONVERT_FLOAT[0] = float
+  target.low = TMP_CONVERT_INT[0]
+  target.high = TMP_CONVERT_INT[1]
+  return target
 }
-*/
 
 // Ported from https://github.com/dcodeIO/long.js/blob/ce11b4b2bd3ba1240a057d62018563d99db318f9/src/long.js#L808-L843
 function add (long, other, target) {
@@ -295,13 +262,13 @@ function copy (source, target) {
 }
 
 module.exports = {
-  isZero,
-  isOdd,
-  eq,
-  lt,
-  compare,
+  isZero: isZero,
+  isOdd: isOdd,
+  eq: eq,
+  lt: lt,
+  compare: compare,
   // Ported from https://github.com/dcodeIO/long.js/blob/ce11b4b2bd3ba1240a057d62018563d99db318f9/src/long.js#L1157-L1172
-  shiftRight (long, numBits, target) {
+  shiftRight: function (long, numBits, target) {
     if ((numBits &= 63) === 0) {
       target.low = long.low
       target.high = long.high
@@ -315,7 +282,7 @@ module.exports = {
     return target
   },
   // Ported from https://github.com/dcodeIO/long.js/blob/ce11b4b2bd3ba1240a057d62018563d99db318f9/src/long.js#L1207-L1219
-  shiftRightUnsigned (long, numBits, target) {
+  shiftRightUnsigned: function (long, numBits, target) {
     if ((numBits &= 63) === 0) {
       target.low = long.low
       target.high = long.high
@@ -332,7 +299,7 @@ module.exports = {
     return target
   },
   // Ported from https://github.com/dcodeIO/long.js/blob/ce11b4b2bd3ba1240a057d62018563d99db318f9/src/long.js#L1213-L1219
-  shiftLeft (long, numBits, target) {
+  shiftLeft: function (long, numBits, target) {
     if ((numBits &= 63) === 0) {
       target.low = long.low
       target.high = long.high
@@ -345,15 +312,16 @@ module.exports = {
     }
     return target
   },
-  multiply,
-  add,
-  subtract,
-  xor,
-  and,
-  not,
-  copy,
-  negate,
-  fromInt,
-  toNumber,
-  fromNumber
+  multiply: multiply,
+  add: add,
+  subtract: subtract,
+  xor: xor,
+  and: and,
+  not: not,
+  copy: copy,
+  negate: negate,
+  fromInt: fromInt,
+  toNumber: toNumber,
+  fromNumber: fromNumber,
+  fromFloat: fromFloat
 }
