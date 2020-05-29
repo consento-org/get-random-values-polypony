@@ -5,6 +5,7 @@
   "main": "node.js",
   "private": true,
   "browser": "browser.js",
+  "react-native": "react-native.js",
   "scripts": {
     "ci": "npm run lint && npm run test",
     "lint": "standard",

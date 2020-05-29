@@ -38,7 +38,7 @@ RCT_EXPORT_METHOD(randomBytes:(NSUInteger)length
 - (NSDictionary *)constantsToExport
 {
     return @{
-        @"seed": [self randomBytes:4096]
+        @"seed": [self randomBytes:8]
     };
 };
 

@@ -32,7 +32,7 @@ class SyncRandomBytesModule extends ReactContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
-    constants.put(SEED_KEY, getRandomBytes(4096));
+    constants.put(SEED_KEY, getRandomBytes(8));
     return constants;
   }
 
