@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+const { execSync: exec } = require('child_process')
+
+
+// TODO: Install same tape version as is used in package in react-native
+exec('npm i ../../dist', { cwd: `${__dirname}/reactnative`})
+
