@@ -1,15 +1,26 @@
 /**
  * @format
  */
-global.Buffer = require('buffer').Buffer
+// global.Buffer = require('buffer').Buffer
+global.Buffer = class {
+  constructor() {
+    
+  }
+}
+global.Buffer.from = function () {
+  console.log(new Error().stack)
+}
+global.Buffer.allocUnsafe = function () {
+  console.log(new Error().stack)
+}
+/*
 process.browser = true
 process.nextTick = setImmediate
 process.cwd = function () {
   return '.'
 }
 global.__dirname = '.'
-
-console.log(Buffer.from('abcd').toString('hex'))
+*/
 
 const { AppRegistry } = require('react-native')
 const App = require('./App')

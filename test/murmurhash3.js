@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('fresh-tape')
 const { xor } = require('../long.js')
 const { murmurhash3Long, murmurhash3String } = require('../murmurhash3.js')
 const TMP = { low: 0|0, high: 0|0 }

@@ -9,12 +9,11 @@ getRandomValues.lowEntropy = false
 getRandomValues.highEntropyPromise = Promise.resolve()
 getRandomValues.polyfill = function () {
   return Promise.resolve().then(function () {
-    console.log()
     if (!('crypto' in global)) {
       global.crypto = {}
     }
     if (!('getRandomValues' in global.crypto)) {
-      global.crypto.getRandomValues = getRandomValues
+      global.crypto.getRandomValues = require('./browserLimitations.js')(getRandomValues)
     }
   })
 }

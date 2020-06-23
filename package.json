@@ -1,19 +1,20 @@
 {
-  "name": "@consento/sync-randombytes",
+  "name": "get-random-values-polypony",
   "version": "1.0.5",
   "description": "Synchronous randombytes function that works in node, the browser & react-native!",
   "main": "node.js",
   "private": true,
   "browser": "browser.js",
+  "homepage": "https://github.com/@consento/sync-randombytes",
   "react-native": "react-native.js",
   "scripts": {
-    "ci": "npm run lint && npm run test",
     "lint": "standard",
     "build": "./build.sh",
+    "test": "npm run lint && npm run test",
     "test:unit": "./e2e/node '../test'",
-    "test:browser:local": "./e2e/browser-local",
-    "test:browser:stack": "./e2e/browser-stack",
-    "test:node": "./e2e/node '../dist/test'"
+    "test:browser:local": "npm run build && ./e2e/browser-local",
+    "test:browser:stack": "npm run build && ./e2e/browser-stack",
+    "test:node": "npm run build && ./e2e/node '../dist/test'"
   },
   "keywords": [
     "react-native",
@@ -28,18 +29,33 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@leichtgewicht/quickhost": "^1.0.0",
-    "babel": "^6.23.0",
-    "babel-cli": "^6.26.0",
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@leichtgewicht/quickhost": "^1.1.0",
     "babel-preset-minify": "^0.5.1",
     "browserify": "^16.5.1",
     "chromedriver": "^83.0.0",
+    "cpy": "^8.1.0",
+    "cross-fetch": "^3.0.4",
+    "del": "^5.1.0",
+    "form-data": "^3.0.0",
+    "fresh-tape": "^5.0.1",
     "geckodriver": "^1.19.1",
+    "ngrok": "^3.2.7",
     "selenium-webdriver": "^4.0.0-alpha.7",
+    "sourceify": "^1.0.0",
     "standard": "^14.3.4",
-    "tape": "^5.0.0"
+    "wd": "^1.12.1",
+    "wdio": "^4.0.0"
   },
   "directories": {
     "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/consento-org/sync-randombytes.git"
+  },
+  "bugs": {
+    "url": "https://github.com/consento-org/sync-randombytes/issues"
   }
 }

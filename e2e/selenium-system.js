@@ -17,8 +17,10 @@ module.exports = async prepareBuilder => {
     throw new Error('process.env.QUICKHOST_SECRET is not specified.')
   }
 
-  const jsKey = await upload({ ...quickhost, data: await runBrowserify([`${__dirname}/selenium-suite.js`]) })
-  console.log('## Uploading to quickhost')
+  const jsData = await runBrowserify([`${__dirname}/selenium-suite.js`])
+  console.log('## Uploading js to quickhost')
+  const jsKey = await upload({ ...quickhost, data: jsData, contentType: 'application/javascript' })
+  console.log('## Uploading page to quickhost')
   const key = await upload({
     ...quickhost,
     data: `<html>
@@ -39,6 +41,13 @@ module.exports = async prepareBuilder => {
           position: absolute;
         }
       </style>
+      <script type="text/javascript">
+        window.addEventListener('error', function(e) { 
+          console.log('!!')
+          element.value += '\\n' + (err.stack || err)
+          document.title = 'failed: true'
+        }, false);
+      </script>
       <script src="${quickhost.server}/${jsKey}" type="text/javascript"></script>
     </html>`
   })
@@ -94,7 +103,10 @@ function runBrowserify (files) {
   return new Promise((resolve, reject) => {
     console.log(`## Browserifying started. ${files.join(', ')}`)
     const result = []
-    const opts = {}
+    const opts = {
+      debug: true,
+      transform: [require('sourceify')]
+    }
     const process = browserify(opts)
     for (const file of files) {
       process.add(file)
@@ -103,8 +115,9 @@ function runBrowserify (files) {
       .once('error', reject)
       .on('data', data => result.push(data))
       .once('end', () => {
-        console.log('## Browserifying done.')
-        resolve(Buffer.concat(result))
+        const data = Buffer.concat(result)
+        console.log('## Browserifying done. ' + data.byteLength)
+        resolve(data)
       })
   })
 }

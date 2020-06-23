@@ -112,7 +112,7 @@ function createRandomSeed (seedInput) {
     throw new Error('Given entropy is not usable for random generation [state1=0]')
   }
 
-  const random = function getRandomValuesSeed (input) {
+  const getRandomValueSeed = function (input) {
     const len = input.byteLength
     const write = getWrite(input)
     
@@ -130,8 +130,9 @@ function createRandomSeed (seedInput) {
     }
     return input
   }
-  random.increaseEntropy = increaseEntropy
-  return random
+  getRandomValueSeed.increaseEntropy = increaseEntropy
+  Object.defineProperty(getRandomValueSeed, 'name', { value: 'getRandomValuesSeed' })
+  return getRandomValueSeed
 
   function increaseEntropy (input) {
     if (input === null || input === undefined) {
@@ -167,5 +168,4 @@ function createRandomSeed (seedInput) {
     return true
   }
 }
-createRandomSeed.name = 'createRandomSeed' // IE 11
 module.exports = createRandomSeed

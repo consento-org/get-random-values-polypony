@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+let start = Date.now()
+console.log('# babel:start')
+const babel = require('@babel/core')
+console.log(`# babel:config:load [${Date.now() - start}ms]`)
+start = Date.now()
+const opts = babel.loadOptionsSync({
+  sourceMaps: true,
+  presets: [
+    [require('babel-preset-minify'), {
+      keepFnName: true,
+      mangle: false
+    }]
+  ]
+})
+console.log(`# babel:config:loaded [${Date.now() - start}ms]`)
+const logFile = file => () => {
+  console.log(`→ ${file} [${Date.now() - start}ms]`)
+}
+const { writeFile } = require('fs').promises
+const files = process.argv.slice(2)
+Promise.all(files.map(file => {
+  return babel.transformFileAsync(file, opts)
+    .then(({ map, code }) => Promise.all([
+      writeFile(`./dist/${file}`, code).then(logFile(file)),
+      writeFile(`./dist/${file}.map`, JSON.stringify(map)).then(logFile(`${file}.map`))
+    ]))
+}))
+  .then(
+    () => console.log('# babel:done '),
+    err => {
+      console.error(err.stack)
+      process.exit(1)
+    }
+  )

@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('fresh-tape')
 const { add, subtract, negate, and, multiply, xor, not, shiftLeft, shiftRight, shiftRightUnsigned, compare, isZero, isOdd, toNumber, fromInt, fromNumber, lt, fromFloat } = require('../long.js')
 const verbose = true
 const TMP = fromInt(0, false)

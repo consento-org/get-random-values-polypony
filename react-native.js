@@ -1,6 +1,19 @@
 const rn = require('react-native')
 const base = window.crypto
 const MAX_SIZE = 65536
+
+function readInt32LE (buffer, offset) {
+  const first = buffer[offset];
+  const last = buffer[offset + 3];
+  if (first === undefined || last === undefined)
+    boundsError(offset, buffer.length - 4);
+
+  return first +
+    buffer[++offset] * 2 ** 8 +
+    buffer[++offset] * 2 ** 16 +
+    (last << 24); // Overflow
+}
+
 let impl
 if (base && base.getRandomValues) {
   // Future proofing!
@@ -40,14 +53,18 @@ if (base && base.getRandomValues) {
   let entropyPromise
   if ('expo' in window) {
     impl.increaseEntropy(window.expo.Constants.sessionId)
-    entropyPromise = require('expo-random').getRandomBytesAsync(8).then(uint8Array => Buffer.from(uint8Array.buffer))
+    if ('random' in window.expo) {
+      entropyPromise = window.expo.random.getRandomBytesAsync(8)
+    } else {
+      console.log(window.expo)
+    }
   }
   if ('SyncRandomBytes' in rn.NativeModules) {
     const nativeSeed = rn.NativeModules.SyncRandomBytes.seed
     if (nativeSeed) {
-      entropyPromise = Promise.resolve(Buffer.from(nativeSeed, 'base64'))
+      entropyPromise = Promise.resolve(new Uint8Array(nativeSeed))
     } else {
-      entropyPromise = rn.NativeModules.SyncRandomBytes.randomBytes(8).then(bytesStr => Buffer.from(bytesStr, 'base64'))
+      entropyPromise = rn.NativeModules.SyncRandomBytes.randomBytes(8).then(bytesArr => new UintArray(bytesArr))
     }
   }
   impl.lowEntropy = true
@@ -55,7 +72,8 @@ if (base && base.getRandomValues) {
     entropyPromise = Promise.reject(new Error('No source for strong entropy found.'))
   }
   impl.highEntropyPromise = entropyPromise.then(bytes => {
-    impl.increaseEntropy({ low: bytes.readInt32LE(0), high: bytes.readInt32LE(4) })
+    console.log({ bytes })
+    impl.increaseEntropy({ low: readInt32LE(bytes, 0), high: readInt32LE(bytes, 4) })
     impl.lowEntropy = false
   })
 }
@@ -65,7 +83,7 @@ impl.polyfill = function () {
       global.crypto = {}
     }
     if (!('getRandomValues' in global.crypto)) {
-      global.crypto.randomValues = impl
+      global.crypto.getRandomValues = require('./browserLimitations.js')(impl)
     }
   })
 }

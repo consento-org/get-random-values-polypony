@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('fresh-tape')
 const getRandomValues = require('..')
 const SAMPLES = 1024
 
@@ -23,7 +23,12 @@ module.exports = function (name, lowEntropy) {
         t.equals(getRandomValues.lowEntropy, false, 'lowentropy should have settled')
         const base = typeof window !== 'undefined' ? window : global
         t.ok(typeof base.crypto.getRandomValues === 'function', 'crypto.getRandomValues should exist')
-        testRandomOutput(t, new Uint8Array(256), base.crypto.getRandomValues)
+        if (name !== 'getRandomValuesBrowser') {
+          t.equals(crypto.getRandomValues.name, name + 'Limited', 'the polyfill support should be limited')
+        }
+        testRandomOutput(t, new Uint8Array(1000), function (input) {
+          return base.crypto.getRandomValues(input)
+        })
         t.end()
       },
       function (err) {

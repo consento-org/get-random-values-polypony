@@ -10,9 +10,9 @@ import com.android.build.OutputFile
  * bundle directly from the development server. Below you can see all the possible configurations
  * and their defaults. If you decide to add a configuration block, make sure to add it before the
  * `apply from: "../../node_modules/react-native/react.gradle"` line.
- *
- * project.ext.react = [
- *   // the name of the generated asset file containing your JS bundle
+ */
+project.ext.react = [
+/*   // the name of the generated asset file containing your JS bundle
  *   bundleAssetName: "index.android.bundle",
  *
  *   // the entry file for bundle generation. If none specified and
@@ -22,10 +22,10 @@ import com.android.build.OutputFile
  *
  *   // https://facebook.github.io/react-native/docs/performance#enable-the-ram-format
  *   bundleCommand: "ram-bundle",
- *
- *   // whether to bundle JS and assets in debug mode
- *   bundleInDebug: false,
- *
+ */
+    // whether to bundle JS and assets in debug mode
+    bundleInDebug: false,
+/*
  *   // whether to bundle JS and assets in release mode
  *   bundleInRelease: true,
  *
@@ -74,10 +74,8 @@ import com.android.build.OutputFile
  *
  *   // supply additional arguments to the packager
  *   extraPackagerArgs: []
- * ]
  */
-
-project.ext.react = [
+    extraPackagerArgs: [ "--sourcemap-output", file("$buildDir/android-sourcemap.js") ],
     enableHermes: false,  // clean and rebuild if changing
 ]
 
@@ -139,7 +137,7 @@ android {
         abi {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
-            universalApk false  // If true, also generate a universal APK
+            universalApk true  // If false, not generate a universal APK
             include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }

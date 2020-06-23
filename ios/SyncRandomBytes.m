@@ -28,11 +28,11 @@ RCT_EXPORT_METHOD(randomBytes:(NSUInteger)length
     callback(@[[NSNull null], [self randomBytes:length]]);
 }
 
-- (NSString *) randomBytes:(NSUInteger)length
+- (NSMutableArray *) randomBytes:(NSUInteger)length
 {
     NSMutableData* bytes = [NSMutableData dataWithLength:length];
-    SecRandomCopyBytes(kSecRandomDefault, length, [bytes mutableBytes]);
-    return [bytes base64EncodedStringWithOptions:0];
+    int status = SecRandomCopyBytes(kSecRandomDefault, length, [bytes mutableBytes]);
+    return (NSMutableArray *)[bytes bytes];
 }
 
 - (NSDictionary *)constantsToExport

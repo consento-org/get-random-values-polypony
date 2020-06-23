@@ -9,6 +9,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import android.util.Base64;
 
@@ -36,10 +38,14 @@ class SyncRandomBytesModule extends ReactContextBaseJavaModule {
     return constants;
   }
 
-  private String getRandomBytes(int size) {
+  private List<Integer> getRandomBytes(int size) {
     SecureRandom sr = new SecureRandom();
+    List<Integer> returnSet = new ArrayList();
     byte[] output = new byte[size];
     sr.nextBytes(output);
-    return Base64.encodeToString(output, Base64.NO_WRAP);
+    for (int i = 0; i < size; i++) {
+      returnSet.add(Byte.toUnsignedInt(output[i]));
+    }
+    return returnSet;
   }
 }
