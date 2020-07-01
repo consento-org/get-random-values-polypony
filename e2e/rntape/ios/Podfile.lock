@@ -432,7 +432,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: 6dc9b8f4ef60d9e5ded7f0264db299c91f18832e
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
-  get-random-values-polypony: 18b337c246bace4c6ed8b6e24eae6d70da23d9b2
+  get-random-values-polypony: 00d8a9f8603fddb6722e4eb20d6ade51e50a5327
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
@@ -459,4 +459,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: a155c4c67433e2fc965f3a6da932c2aec657840e
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3

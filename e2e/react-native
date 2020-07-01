@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const wd = require('wd')
-const { execSync } = require('child_process')
+const { execSync, spawn } = require('child_process')
 const del = require('del')
 const path = require('path')
 const ngrok = require('ngrok')
@@ -9,13 +9,91 @@ const FormData = require('form-data')
 const { createServer } = require('http')
 const { createReadStream } = require('fs')
 const { writeFile, mkdir, readFile } = require('fs').promises
-const bs = {
-  user: process.env.BROWSERSTACK_USER,
-  pwd: process.env.BROWSERSTACK_PASSWORD
-}
 const package = require('../package.json')
-const browserStack = false
-const android = false
+
+/*
+function mergeIterators (streams) {
+  let iterators
+  const list = {
+    next: undefined,
+    last: undefined
+  }
+  let next
+  return {
+    next () {
+      if (iterators === undefined) {
+        iterators = new Map()
+        for (const stream of streams) {
+          const iter = stream[Symbol.asyncIterator]()
+          iterators.set(stream, iter)
+          iter.next()
+        }
+      }
+      if (list.next) {
+        let result = list.next
+        list.next = result.next
+        if (list.next === undefined) {
+          list.last = undefined
+        }
+        return result.promise
+      }
+      return new Promise((resolve, reject) => {
+        next = { resolve, reject }
+      })
+    },
+    return () {}
+  }
+}
+*/
+
+const exec = function (command, args, opts) {
+  const spawned = spawn(command, args, {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    ...opts
+  })
+  let buf = ''
+  let trigger
+  const handleData = data => {
+    buf += data.toString()
+    ;trigger && trigger()
+  }
+  spawned.stderr.on('data', handleData)
+  spawned.stdout.on('data', handleData)
+  spawned.on('exit', code => {
+    proc.exit = code
+    ;trigger && trigger()
+  }) 
+
+  const proc = {
+    [Symbol.asyncIterator]: async function * (opts = {}) {
+      while (proc.exit === null || buf.length > 0) {
+        do {
+          const index = buf.indexOf('\n')
+          if (index === -1) {
+            yield buf
+            buf = ''
+          } else {
+            yield buf.substr(0, index)
+            buf = buf.substr(index + 1)
+          }
+        } while (buf.length > 0)
+        await new Promise(resolve => {
+          trigger = resolve
+        })
+      }
+      if (opts.noError !== true && proc.exit !== 0) {
+        throw new Error(`Error: Command ended with exit code: ${proc.exit}`)
+      }
+    },
+    exit: null
+  }
+  return proc
+}
+
+const logExec = async function (command, args, opts) {
+  for await (const line of exec(command, args, opts))
+    console.log(line)
+}
 
 const createServerAsync = function (listener, port) {
   return new Promise((resolve, reject) => {
@@ -42,9 +120,47 @@ const createServerAsync = function (listener, port) {
 }
 
 ;(async () => {
+  const bs = {
+    user: process.env.BROWSERSTACK_USER,
+    key: process.env.BROWSERSTACK_ACCESS_KEY
+  }
+  const browserStack = bs.user !== undefined
+  const system = process.argv[2]
+  const android = system === 'android'
+
+  if (!android && process.argv[2] !== 'ios') {
+    throw new Error('First argument needs to be "ios" or "android"')
+  }
+
+  // const ios = system === 'ios' // Unused at the moment, maybe useful at other times
+
+  const runId = process.env.GITHUB_RUN_ID || 'dirty'
+
+  let device = process.env.BROWSERSTACK_DEVICE
+  if (!device) {
+    if (android) {
+      device = 'Google Pixel 3'
+    } else {
+      device = 'iPhone XS'
+    }
+  }
+  
+  let os_version = process.env.BROWSERSTACK_OS_VERSION
+  if (!os_version) {
+    if (android) {
+      os_version = '9.0'
+    } else {
+      os_version = '12'
+    }
+  }
+
+  const build = `${runId}:react-native:${system}:${device}:${os_version}`
+  console.log(`## Running ${browserStack ? 'browser-stack' : 'local'} build → ${build}`)
   let _resolve
-  const response = new Promise(resolve => {
+  let _reject
+  const response = new Promise((resolve, reject) => {
     _resolve = resolve
+    _reject = reject
   })
   const target = `${__dirname}/rntape/node_modules/${package.name}`
   try {
@@ -59,6 +175,9 @@ const createServerAsync = function (listener, port) {
   await mkdir(path.dirname(target), { recursive: true })
   console.log(`## react-native:copy-build [src=./dist target=${target}]`)
   await execSync(`cp -r ${__dirname}/../dist ${target}`)
+  console.log(`## react-native:npm install`)
+  await logExec('npm', ['i'], { cwd: `${__dirname}/rntape` })
+  console.log("## local-server:start")
   const { server, close } = await createServerAsync((req, res) => {
     const result = []
     req.on('data', data => result.push(data))
@@ -71,8 +190,9 @@ const createServerAsync = function (listener, port) {
       res.end('ok')
     })
   }, 1234)
+  let driver
   try {
-    console.log("## ngrok:connect")
+  console.log("## ngrok:connect")
     const publicURL = await ngrok.connect({
       proto: 'http',
       region: process.env.NGROK_REGION,
@@ -89,83 +209,111 @@ const createServerAsync = function (listener, port) {
     let buildDetails
     if (android) {
       console.log('## react-native:build:android')
-      execSync('./gradlew assembleRelease', { cwd: `${__dirname}/rntape/android` })
+      await logExec('./gradlew', ['assembleRelease'], { cwd: `${__dirname}/rntape/android` })
       buildDetails = {
         app: `${__dirname}/rntape/android/app/build/outputs/apk/release/app-release.apk`,
         capabilities: {
-          device: 'Google Pixel 3',
-          os_version: '9.0'
+          device,
+          os_version
         }
       }
+      // execSync('react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/')
     } else {
       console.log('## react-native:build:ios:pod')
-      // execSync('pod install', { cwd: `${__dirname}/rntape/ios` })
-      console.log('## react-native:build:ios:bundle')
-      // execSync('npx react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios', { cwd: `${__dirname}/rntape` })
-      // console.log('## react-native:build:ios:ipa')
-      // execSync(`mkdir rntape.ipa; mv rntape.app rntape.ipa/Payload/rntape.app`, { cwd : `${__dirname}/rntape/ios/build`})
+      await logExec('pod', ['install', '--clean-install'], { cwd: `${__dirname}/rntape/ios` })
       console.log('## react-native:build:ios:app')
-      execSync(`mkdir -p ${__dirname}/rntape/ios/build`)
-      execSync(`xcodebuild build \\
-          -workspace rntape.xcworkspace \\
-          -configuration Release \\
-          -scheme rntape \\
-          -destination "generic/platform=iOS" \\
-          CODE_SIGN_IDENTITY="" \\
-          CODE_SIGNING_REQUIRED="NO" \\
-          CODE_SIGN_ENTITLEMENTS="" \\
-          CODE_SIGNING_ALLOWED="NO" \\
-          CONFIGURATION_BUILD_DIR="${__dirname}/rntape/ios/build"`,
-          { cwd: `${__dirname}/rntape/ios` }
-        )
-      // execSync(`xcodebuild archive -workspace rntape.xcworkspace -configuration Release -scheme rntape -archivePath "build/rntape.xcarchive" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"`, { cwd: `${__dirname}/rntape/ios` })
-      // console.log('## react-native:build:ios:ipa')
-      // execSync(`xcodebuild -exportArchive -archivePath "build/rntape.xcarchive" -exportPath "build/rntape.ipa" -destination "generic/platform=iOS" -exportOptionsPlist ./iosExportOptions.plist`, { cwd: `${__dirname}/rntape/ios` })
-      // console.log('## react-native:build:ios:ipa')
-      // execSync(`xcodebuild -exportArchive -archivePath "${__dirname}/rntape/ios/build/rntape.xcarchive" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"`, { cwd: `${__dirname}/rntape/ios` })
+      console.log(execSync(`mkdir -p ${__dirname}/rntape/ios/build`).toString())
+      await logExec(
+        'xcodebuild',
+        [
+          'clean',
+          'build',
+          '-workspace', `${__dirname}/rntape/ios/rntape.xcworkspace`,
+          '-configuration', 'Release',
+          '-scheme', 'rntape',
+          '-arch', 'arm64',
+          '-derivedDataPath', 'build',
+          'CODE_SIGN_IDENTITY=""',
+          'CODE_SIGNING_REQUIRED="NO"',
+          'CODE_SIGN_ENTITLEMENTS=""',
+          'CODE_SIGNING_ALLOWED="NO"'
+        ],
+        { cwd: `${__dirname}/rntape/ios` }
+      )
+      console.log('## react-native:build:ios:ipa')
+      await logExec('rm', ['-r', 'ipa'], { cwd: `${__dirname}/rntape/ios/build` })
+      await logExec('mkdir', ['-p', 'build/ipa/Payload'], { cwd: `${__dirname}/rntape/ios` })
+      await logExec('cp', ['-r', 'build/Build/Products/Release-iphoneos/rntape.app', 'build/ipa/Payload/rntape.app'], { cwd: `${__dirname}/rntape/ios` })
+      await logExec('rm', ['rntape-1.ipa'], { cwd: `${__dirname}/rntape/ios/build` })
+      await logExec('zip', ['-r', '../rntape-1.ipa', 'Payload'], { cwd: `${__dirname}/rntape/ios/build/ipa` })
       buildDetails = {
-        app: `${__dirname}/rntape/ios/build/outputs/apk/release/app-release.apk`,
+        app: `${__dirname}/rntape/ios/build/rntape-1.ipa`,
         capabilities: {
-          device: 'Google Pixel 3',
-          os_version: '9.0'
+          device,
+          os_version
         }
       }
     }
-    // execSync('react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/')
     if (browserStack) {
       const formData = new FormData()
       formData.append('file', createReadStream(buildDetails.app))
       formData.append('data', '{}')
       const headers = new Headers(formData.getHeaders())
-      headers.append('Authorization', 'Basic ' + Buffer.from(bs.user + ":" + bs.pwd).toString('base64'))
+      headers.append('Authorization', 'Basic ' + Buffer.from(bs.user + ":" + bs.key).toString('base64'))
       console.log('## Uploading file to browserstack')
-      const { app_url } = await (await fetch(`https://api-cloud.browserstack.com/app-automate/upload`, {
+      const json = await (await fetch(`https://api-cloud.browserstack.com/app-automate/upload`, {
         method: 'post',
         body: formData,
         headers
       })).json()
+
+      if (json.error) {
+        throw new Error(json.error)
+      }
+
+      const { app_url } = json
+
+      console.log(`## Starting browser test at ${app_url}`)
   
-      const driver = wd.promiseRemote("http://hub-cloud.browserstack.com/wd/hub")
+      driver = wd.promiseRemote("http://hub-cloud.browserstack.com/wd/hub")
+
+      const caps = {
+        ...buildDetails.capabilities,
+        'browserstack.user': bs.user,
+        'browserstack.key': bs.key,
+        'browserstack.networkLogs': true,
+        project: package.name,
+        build,
+        name: package.name,
+        app: app_url
+      }
+
+      console.log({ caps })
+
+      process.on('uncaughtException', _reject)
       driver
-        .init({
-          ...buildDetails.capabilities,
-          project: 'My First Project',
-          build: 'My First Build',
-          name: 'Bstack-[Node] Sample Test',
-          app: app_url
-        })
+        .init(caps)
         .fin(function() {})
         .done()
     } else {
-      console.log('## react-native:install')
+      if (android) {
+        console.log('## react-native:install')
+        await logExec('adb', ['install', '-r', 'app/build/outputs/apk/release/app-release.apk'], { cwd: `${__dirname}/rntape/android` })
+        console.log('## MANUAL ACTION REQUIRED: open the react-native app "rntape" on the device.')
+      } else {
 
-      // execSync('adb install -r app/build/outputs/apk/release/app-release.apk', { cwd: `${__dirname}/rntape/android` })
-      console.log('## react-native: open the react-native app "rntape"')
+      }
     }
     // TODO use ./rntape/android/app/build/android-sourcemap.js for good error messages
     console.log((await response).output)
-    driver.quit()
+  } catch (err) {
+    if (err.data) {
+      err.message = err.message + '\n' + err.data
+    }
+    throw err
   } finally {
+    process.removeListener('uncaughtException', _reject)
+    driver && driver.quit()
     console.log('## ngrok:disconnect')
     await ngrok.disconnect()
     await ngrok.kill()

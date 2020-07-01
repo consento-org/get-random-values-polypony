@@ -107,7 +107,7 @@ try {
     harness.onFailure(() => end(1, 'error.\n'))
     harness.onFinish(() => end(0, 'done.\n'))
     try {
-      require('get-random-values-polypony/test/index.js')('getRandomValuesSeed', true)
+      require('get-random-values-polypony/test/index.js')('getRandomValuesSeed')
     } catch (err) {
       end(1, err)
     }
