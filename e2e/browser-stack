@@ -12,26 +12,28 @@ if (!accessKey) {
 
 const browserstackURL = `https://${userName}:${accessKey}@hub-cloud.browserstack.com/wd/hub`
 
-// Input capabilities
-const capabilities = {
-  name: '@consento/sync-randombytes',
-  build: process.env.GITHUB_RUN_ID || 'dirty',
-  os: 'Windows',
-  os_version: '7',
-  browserName: 'Internet Explorer',
-  browser_version: '10',
-  'browserstack.console': 'verbose',
-  'browserstack.video': false,
-  'browserstack.debug': true
-}
-
 const selenium = require('./selenium-system.js')
+;(async () => {
+  const 
+  // Input capabilities
+  const capabilities = {
+    name: '@consento/sync-randombytes',
+    build: process.env.GITHUB_RUN_ID || 'dirty',
+    os: process.env.BROWSERSTACK_OS || 'Windows',
+    os_version: process.env.BROWSERSTACK_OS_VERSION || '7',
+    browserName: process.env.BROWSERSTACK_BROWSER_NAME || 'Internet Explorer',
+    browser_version: process.env.BROWSERSTACK_BROWSER_VERSION || '10',
+    'browserstack.console': 'verbose',
+    'browserstack.video': false,
+    'browserstack.debug': true
+  }
 
-selenium(
-  builder => builder
-    .usingServer(browserstackURL)
-    .withCapabilities(capabilities)
-).then(
+  await selenium(
+    builder => builder
+      .usingServer(browserstackURL)
+      .withCapabilities(capabilities)
+  )
+}).then(
   failed => {
     process.exit(failed ? 1 : 0)
   },
