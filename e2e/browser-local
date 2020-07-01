@@ -10,7 +10,7 @@ if (browser === 'firefox') {
 } else if (browser === 'chrome') {
   require('chromedriver')
 } else {
-  throw new Error(`Unknown browser: ${browser}`)
+  throw new Error(`Unknown browser: ${browser} (Known browser: firefox, chrome)`)
 }
 
 const selenium = require('./selenium-system.js')
