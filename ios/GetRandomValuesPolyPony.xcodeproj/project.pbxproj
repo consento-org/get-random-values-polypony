@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		163CDE472087CAD3001065FB /* SyncRandomBytes.m in Sources */ = {isa = PBXBuildFile; fileRef = 73EEC93E1BFE4B1D00D468EB /* SyncRandomBytes.m */; };
-		163CDE4A2087CAD3001065FB /* SyncRandomBytes.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 73EEC93C1BFE4B1D00D468EB /* SyncRandomBytes.h */; };
-		73EEC93D1BFE4B1D00D468EB /* SyncRandomBytes.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 73EEC93C1BFE4B1D00D468EB /* SyncRandomBytes.h */; };
-		73EEC93F1BFE4B1D00D468EB /* SyncRandomBytes.m in Sources */ = {isa = PBXBuildFile; fileRef = 73EEC93E1BFE4B1D00D468EB /* SyncRandomBytes.m */; };
+		163CDE472087CAD3001065FB /* GetRandomValuesPolyPony.m in Sources */ = {isa = PBXBuildFile; fileRef = 73EEC93E1BFE4B1D00D468EB /* GetRandomValuesPolyPony.m */; };
+		163CDE4A2087CAD3001065FB /* GetRandomValuesPolyPony.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 73EEC93C1BFE4B1D00D468EB /* GetRandomValuesPolyPony.h */; };
+		73EEC93D1BFE4B1D00D468EB /* GetRandomValuesPolyPony.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 73EEC93C1BFE4B1D00D468EB /* GetRandomValuesPolyPony.h */; };
+		73EEC93F1BFE4B1D00D468EB /* GetRandomValuesPolyPony.m in Sources */ = {isa = PBXBuildFile; fileRef = 73EEC93E1BFE4B1D00D468EB /* GetRandomValuesPolyPony.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -20,7 +20,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				163CDE4A2087CAD3001065FB /* SyncRandomBytes.h in CopyFiles */,
+				163CDE4A2087CAD3001065FB /* GetRandomValuesPolyPony.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -30,17 +30,17 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				73EEC93D1BFE4B1D00D468EB /* SyncRandomBytes.h in CopyFiles */,
+				73EEC93D1BFE4B1D00D468EB /* GetRandomValuesPolyPony.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		163CDE4E2087CAD3001065FB /* libSyncRandomBytes-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libSyncRandomBytes-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		73EEC9391BFE4B1D00D468EB /* libSyncRandomBytes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSyncRandomBytes.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		73EEC93C1BFE4B1D00D468EB /* SyncRandomBytes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SyncRandomBytes.h; sourceTree = "<group>"; };
-		73EEC93E1BFE4B1D00D468EB /* SyncRandomBytes.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SyncRandomBytes.m; sourceTree = "<group>"; };
+		163CDE4E2087CAD3001065FB /* libGetRandomValuesPolyPony-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libGetRandomValuesPolyPony-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		73EEC9391BFE4B1D00D468EB /* libGetRandomValuesPolyPony.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGetRandomValuesPolyPony.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		73EEC93C1BFE4B1D00D468EB /* GetRandomValuesPolyPony.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GetRandomValuesPolyPony.h; sourceTree = "<group>"; };
+		73EEC93E1BFE4B1D00D468EB /* GetRandomValuesPolyPony.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GetRandomValuesPolyPony.m; sourceTree = "<group>"; };
 		73EEC94A1BFE4B1D00D468EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -65,9 +65,9 @@
 		73EEC9301BFE4B1D00D468EB = {
 			isa = PBXGroup;
 			children = (
-				73EEC93C1BFE4B1D00D468EB /* SyncRandomBytes.h */,
-				73EEC93E1BFE4B1D00D468EB /* SyncRandomBytes.m */,
-				73EEC9481BFE4B1D00D468EB /* SyncRandomBytesTests */,
+				73EEC93C1BFE4B1D00D468EB /* GetRandomValuesPolyPony.h */,
+				73EEC93E1BFE4B1D00D468EB /* GetRandomValuesPolyPony.m */,
+				73EEC9481BFE4B1D00D468EB /* GetRandomValuesPolyPonyTests */,
 				73EEC93A1BFE4B1D00D468EB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -75,18 +75,18 @@
 		73EEC93A1BFE4B1D00D468EB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				73EEC9391BFE4B1D00D468EB /* libSyncRandomBytes.a */,
-				163CDE4E2087CAD3001065FB /* libSyncRandomBytes-tvOS.a */,
+				73EEC9391BFE4B1D00D468EB /* libGetRandomValuesPolyPony.a */,
+				163CDE4E2087CAD3001065FB /* libGetRandomValuesPolyPony-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		73EEC9481BFE4B1D00D468EB /* SyncRandomBytesTests */ = {
+		73EEC9481BFE4B1D00D468EB /* GetRandomValuesPolyPonyTests */ = {
 			isa = PBXGroup;
 			children = (
 				73EEC9491BFE4B1D00D468EB /* Supporting Files */,
 			);
-			path = SyncRandomBytesTests;
+			path = GetRandomValuesPolyPonyTests;
 			sourceTree = "<group>";
 		};
 		73EEC9491BFE4B1D00D468EB /* Supporting Files */ = {
@@ -100,9 +100,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		163CDE452087CAD3001065FB /* SyncRandomBytes-tvOS */ = {
+		163CDE452087CAD3001065FB /* GetRandomValuesPolyPony-tvOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 163CDE4B2087CAD3001065FB /* Build configuration list for PBXNativeTarget "SyncRandomBytes-tvOS" */;
+			buildConfigurationList = 163CDE4B2087CAD3001065FB /* Build configuration list for PBXNativeTarget "GetRandomValuesPolyPony-tvOS" */;
 			buildPhases = (
 				163CDE462087CAD3001065FB /* Sources */,
 				163CDE482087CAD3001065FB /* Frameworks */,
@@ -112,14 +112,14 @@
 			);
 			dependencies = (
 			);
-			name = "SyncRandomBytes-tvOS";
-			productName = SyncRandomBytes;
-			productReference = 163CDE4E2087CAD3001065FB /* libSyncRandomBytes-tvOS.a */;
+			name = "GetRandomValuesPolyPony-tvOS";
+			productName = GetRandomValuesPonyPoly;
+			productReference = 163CDE4E2087CAD3001065FB /* libGetRandomValuesPolyPony-tvOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		73EEC9381BFE4B1D00D468EB /* SyncRandomBytes */ = {
+		73EEC9381BFE4B1D00D468EB /* GetRandomValuesPolyPony */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 73EEC94D1BFE4B1D00D468EB /* Build configuration list for PBXNativeTarget "SyncRandomBytes" */;
+			buildConfigurationList = 73EEC94D1BFE4B1D00D468EB /* Build configuration list for PBXNativeTarget "GetRandomValuesPolyPony" */;
 			buildPhases = (
 				73EEC9351BFE4B1D00D468EB /* Sources */,
 				73EEC9361BFE4B1D00D468EB /* Frameworks */,
@@ -129,9 +129,9 @@
 			);
 			dependencies = (
 			);
-			name = SyncRandomBytes;
-			productName = SyncRandomBytes;
-			productReference = 73EEC9391BFE4B1D00D468EB /* libSyncRandomBytes.a */;
+			name = GetRandomValuesPolyPony;
+			productName = GetRandomValuesPonyPoly;
+			productReference = 73EEC9391BFE4B1D00D468EB /* libGetRandomValuesPolyPony.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -148,7 +148,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 73EEC9341BFE4B1D00D468EB /* Build configuration list for PBXProject "SyncRandomBytes" */;
+			buildConfigurationList = 73EEC9341BFE4B1D00D468EB /* Build configuration list for PBXProject "GetRandomValuesPolyPony" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -161,8 +161,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				73EEC9381BFE4B1D00D468EB /* SyncRandomBytes */,
-				163CDE452087CAD3001065FB /* SyncRandomBytes-tvOS */,
+				73EEC9381BFE4B1D00D468EB /* GetRandomValuesPolyPony */,
+				163CDE452087CAD3001065FB /* GetRandomValuesPolyPony-tvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -172,7 +172,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				163CDE472087CAD3001065FB /* SyncRandomBytes.m in Sources */,
+				163CDE472087CAD3001065FB /* GetRandomValuesPolyPony.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,7 +180,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				73EEC93F1BFE4B1D00D468EB /* SyncRandomBytes.m in Sources */,
+				73EEC93F1BFE4B1D00D468EB /* GetRandomValuesPolyPony.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -345,7 +345,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		163CDE4B2087CAD3001065FB /* Build configuration list for PBXNativeTarget "SyncRandomBytes-tvOS" */ = {
+		163CDE4B2087CAD3001065FB /* Build configuration list for PBXNativeTarget "GetRandomValuesPolyPony-tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				163CDE4C2087CAD3001065FB /* Debug */,
@@ -354,7 +354,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		73EEC9341BFE4B1D00D468EB /* Build configuration list for PBXProject "SyncRandomBytes" */ = {
+		73EEC9341BFE4B1D00D468EB /* Build configuration list for PBXProject "GetRandomValuesPolyPony" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				73EEC94B1BFE4B1D00D468EB /* Debug */,
@@ -363,7 +363,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		73EEC94D1BFE4B1D00D468EB /* Build configuration list for PBXNativeTarget "SyncRandomBytes" */ = {
+		73EEC94D1BFE4B1D00D468EB /* Build configuration list for PBXNativeTarget "GetRandomValuesPolyPony" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				73EEC94E1BFE4B1D00D468EB /* Debug */,

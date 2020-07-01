@@ -1,4 +1,4 @@
-package org.consento.syncrandombytes;
+package org.consento.getrandomvaluespolypony;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SyncRandomBytesPackage implements ReactPackage {
+public class GetRandomValuesPolyPonyPackage implements ReactPackage {
 
   @Override
   public List<NativeModule> createNativeModules(
                               ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
 
-    modules.add(new SyncRandomBytesModule(reactContext));
+    modules.add(new GetRandomValuesPolyPonyModule(reactContext));
 
     return modules;
   }

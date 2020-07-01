@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.consento.syncrandombytes.test" >
+    package="org.consento.getrandomvaluespolypony.test" >
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -10,8 +10,8 @@
         android:name="android.test.InstrumentationTestRunner"
         android:functionalTest="false"
         android:handleProfiling="false"
-        android:label="Tests for org.consento.syncrandombytes.test"
-        android:targetPackage="org.consento.syncrandombytes.test" />
+        android:label="Tests for org.consento.getrandomvaluespolypony.test"
+        android:targetPackage="org.consento.getrandomvaluespolypony.test" />
 
     <application
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"

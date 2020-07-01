@@ -1,10 +1,9 @@
 //
-//  SyncRandomBytes.h
-//  randombytes
+//  GetRandomValuesPolyPony.h
 //
-//  Forked by Martin Heidegger on 9/26/19.
-//  Created by Mark Vayngrib on 10/13/15.
-//  Copyright (c) 2015 Facebook. All rights reserved.
+//  Random uuid
+//
+//  Created by Martin Heidegger on 7/1/2020.
 //
 
 #import <Foundation/Foundation.h>
@@ -17,6 +16,6 @@
 #endif
 
 
-@interface SyncRandomBytes : NSObject<RCTBridgeModule>
+@interface GetRandomValuesPolyPony : NSObject<RCTBridgeModule>
 
 @end

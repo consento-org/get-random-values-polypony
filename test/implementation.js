@@ -2,40 +2,19 @@ const test = require('fresh-tape')
 const getRandomValues = require('..')
 const SAMPLES = 1024
 
-module.exports = function (name, lowEntropy) {
-  test(name + ' - entropy information', function (t) {
-    t.equals(getRandomValues.lowEntropy, lowEntropy, 'lowEntropy is expected to be ' + lowEntropy)
-    getRandomValues.highEntropyPromise.then(
-      function () {
-        t.equals(getRandomValues.lowEntropy, false, 'auto-fixes low entropy')
-        t.end()
-      },
-      function (err) {
-        t.fail(err)
-        t.end()
-      }
-    )
-  })
+module.exports = function (name) {
 
   test(name + ' - polyfill', function (t) {
-    getRandomValues.polyfill().then(
-      function () {
-        t.equals(getRandomValues.lowEntropy, false, 'lowentropy should have settled')
-        const base = typeof window !== 'undefined' ? window : global
-        t.ok(typeof base.crypto.getRandomValues === 'function', 'crypto.getRandomValues should exist')
-        if (name !== 'getRandomValuesBrowser') {
-          t.equals(crypto.getRandomValues.name, name + 'Limited', 'the polyfill support should be limited')
-        }
-        testRandomOutput(t, new Uint8Array(1000), function (input) {
-          return base.crypto.getRandomValues(input)
-        })
-        t.end()
-      },
-      function (err) {
-        t.fail(err)
-        t.end()
-      }
-    )
+    getRandomValues.polyfill()
+    const base = typeof window !== 'undefined' ? window : global
+    t.ok(typeof base.crypto.getRandomValues === 'function', 'crypto.getRandomValues should exist')
+    if (name !== 'getRandomValuesBrowser') {
+      t.equals(crypto.getRandomValues.name, name + 'Limited', 'the polyfill support should be limited')
+    }
+    testRandomOutput(t, new Uint8Array(1000), function (input) {
+      return base.crypto.getRandomValues(input)
+    })
+    t.end()
   })
 
   test(name + ' - performance', function (t) {

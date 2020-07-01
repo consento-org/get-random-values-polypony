@@ -20,8 +20,6 @@ function getRandomValuesBrowser (input) {
   return input
 }
 getRandomValuesBrowser.name = 'getRandomValuesBrowser' // IE 11
-getRandomValuesBrowser.lowEntropy = false
-getRandomValuesBrowser.highEntropyPromise = Promise.resolve()
-getRandomValuesBrowser.polyfill = function () { return Promise.resolve() }
+getRandomValuesBrowser.polyfill = function () {}
 
 module.exports = getRandomValuesBrowser
