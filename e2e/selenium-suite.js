@@ -31,4 +31,4 @@ window.addEventListener('error', function(e) {
   document.title = 'failed: true'
 }, false);
 
-require('../dist/test')('getRandomValuesBrowser', false)
+require('../dist/test')('getRandomValuesBrowser')
