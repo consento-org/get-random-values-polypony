@@ -5,4 +5,4 @@ mkdir -p dist/test
 cp -r Readme.md LICENSE *.podspec ios android dist
 ./babelBuild *.js test/*.js
 
-node -p "pkg = require('./package.json'); delete pkg.private; JSON.stringify(pkg)" > dist/package.json
+node -p "pkg = require('./package.json'); delete pkg.private; JSON.stringify(pkg, null, 2)" > dist/package.json
