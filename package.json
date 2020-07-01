@@ -14,7 +14,9 @@
     "test:unit": "./e2e/node '../test'",
     "test:browser:local": "npm run build && ./e2e/browser-local",
     "test:browser:stack": "npm run build && ./e2e/browser-stack",
-    "test:node": "npm run build && ./e2e/node '../dist/test'"
+    "test:node": "npm run build && ./e2e/node '../dist/test/index.js'",
+    "test:rn:android": "./e2e/react-native android",
+    "test:rn:ios": "./e2e/react-native ios"
   },
   "keywords": [
     "react-native",
