@@ -37,9 +37,7 @@ const path = require('path')
   }
 })()
   .then(
-    ({ finished }) => {
-      process.exit(finished)
-    },
+    () => process.exit(0),
     err => {
       console.error(err.stack)
       process.exit(2)
