@@ -1,4 +1,4 @@
-const tape = require('tape')
+const tape = require('fresh-tape')
 const Writable = require('readable-stream').Writable
 
 const element = document.getElementById('output')
