@@ -84,12 +84,15 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Setup windows bash
+      run: npm config set script-shell "C:\\Program Files (x86)\\git\\bin\\bash.exe"
+      if: ${{ matrix.os != 'windows' }}
     - name: Install dependencies
       run: npm i
     - name: Build dist
       run: npm run build
     - name: Run on device
-      run: ./e2e/e2e
+      run: node e2e/e2e
       env:
         GITHUB_CONTEXT: ${{ toJson(matrix) }}
         BROWSERSTACK_USER: ${{ secrets.BROWSERSTACK_USER }}
