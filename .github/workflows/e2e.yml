@@ -109,7 +109,7 @@ jobs:
             type: node
             node-version: 10
           - id: windows:node:12
-            build: true
+            build: false
             os: windows-latest
             type: node
             node-version: 12
