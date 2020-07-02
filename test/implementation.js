@@ -2,6 +2,15 @@ const test = require('fresh-tape')
 const getRandomValues = require('..')
 const SAMPLES = 1024
 
+function uintstr (uint8Array) {
+  const arr = []
+  for (let i = 0; i < uint8Array.length; i++) {
+    arr[i] = uint8Array[i]
+  }
+  const str = arr.join(',')
+  return str
+}
+
 module.exports = function (name) {
 
   test(name + ' - polyfill', function (t) {
@@ -52,9 +61,41 @@ module.exports = function (name) {
   const array = new ArrayBuffer(SAMPLES)
   testInput('DataView', new DataView(array))
 
+  testOffset('small data', 48, 16, 16)
+  testOffset('zero offset', 48, 0, 16)
+  testOffset('full length', 48, 16, 48 - 16)
+  testOffset('big offset', (65536 * 2.5) | 0, (65536 * 0.5) | 0, (65536 * 1.2) | 0)
+
+  return
   function testInput (type, input) {
     test(name + ' - ' + type, function (t) {
       testRandomOutput(t, input, getRandomValues)
+      t.end()
+    })
+  }
+  function testOffset (name, total, offset, length) {
+    test(name + ' - offset: ' + offset + '/' + length + ' of ' + total, function (t) {
+      const original = new Uint8Array(total)
+      const input = new Uint8Array(original.buffer, offset, length)
+      let after
+      let afterStr
+      let before
+      let beforeStr
+      if (offset > 0) {
+        before = getRandomValues(new Uint8Array(original.buffer, 0, offset))
+        beforeStr = uintstr(before)
+      }
+      if (length === 0 || length > 0) {
+        after = getRandomValues(new Uint8Array(original.buffer, offset + length))
+        afterStr = uintstr(after)
+      }
+      getRandomValues(input)
+      if (before) {
+        t.equals(uintstr(before), beforeStr, 'before ' + offset + ' is untouched')
+      }
+      if (after) {
+        t.equals(uintstr(after), afterStr, 'after   ' + (offset + length) + ' is untouched')
+      }
       t.end()
     })
   }
