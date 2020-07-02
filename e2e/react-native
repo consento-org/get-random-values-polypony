@@ -123,12 +123,12 @@ const createServerAsync = function (listener, port) {
       throw err
     }
   }
+  console.log(`## react-native:npm install`)
+  await logExec('npm', ['i'], { cwd: `${__dirname}/rntape` })
   console.log(`## react-native:preparing-dep [target=${target}]`)
   await mkdir(path.dirname(target), { recursive: true })
   console.log(`## react-native:copy-build [src=./dist target=${target}]`)
   await execSync(`cp -r ${__dirname}/../dist ${target}`)
-  console.log(`## react-native:npm install`)
-  await logExec('npm', ['i'], { cwd: `${__dirname}/rntape` })
   console.log("## local-server:start")
   const { server, close } = await createServerAsync((req, res) => {
     const result = []
