@@ -52,7 +52,7 @@ const selenium = require('./selenium-system.js')
       .usingServer(browserstackURL)
       .withCapabilities(capabilities)
   )
-}).then(
+})().then(
   failed => {
     process.exit(failed ? 1 : 0)
   },
