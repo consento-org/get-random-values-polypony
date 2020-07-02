@@ -83,11 +83,21 @@ jobs:
             browser_os_version: "9.0"
             browser: android
             device: Google Pixel 3
+          - id: ubuntu:node:6.12
+            build: false
+            os: ubuntu-latest
+            type: node
+            node-version: 6.12
           - id: ubuntu:node:6
             build: false
             os: ubuntu-latest
             type: node
             node-version: 6
+          - id: ubuntu:node:7
+            build: false
+            os: ubuntu-latest
+            type: node
+            node-version: 7
           - id: ubuntu:node:8
             build: false
             os: ubuntu-latest
