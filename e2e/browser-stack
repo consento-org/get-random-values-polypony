@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const userName = process.env.BROWSERSTACK_USER
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY
+const package = require('../package.json')
 
 if (!userName) {
   throw new Error('process.env.BROWSERSTACK_USER is required to run browserstack e2e tests')
@@ -14,18 +15,36 @@ const browserstackURL = `https://${userName}:${accessKey}@hub-cloud.browserstack
 
 const selenium = require('./selenium-system.js')
 ;(async () => {
-  const 
+  const runId = process.env.GITHUB_RUN_ID || 'dirty'
+  const browserName = process.env.BROWSERSTACK_BROWSER_NAME || 'Internet Explorer'
+  const os_version = process.env.BROWSERSTACK_OS_VERSION || '7'
   // Input capabilities
-  const capabilities = {
-    name: '@consento/sync-randombytes',
-    build: process.env.GITHUB_RUN_ID || 'dirty',
-    os: process.env.BROWSERSTACK_OS || 'Windows',
-    os_version: process.env.BROWSERSTACK_OS_VERSION || '7',
-    browserName: process.env.BROWSERSTACK_BROWSER_NAME || 'Internet Explorer',
-    browser_version: process.env.BROWSERSTACK_BROWSER_VERSION || '10',
+  const buildBase = `${runId}:browser:${browserName}`
+  let capabilities = {
+    name: package.name,
+    os_version,
+    browserName,
     'browserstack.console': 'verbose',
     'browserstack.video': false,
     'browserstack.debug': true
+  }
+  if (browserName === 'android' || browserName === 'ios') {
+    const device = process.env.BROWSERSTACK_DEVICE
+    capabilities = {
+      ...capabilities,
+      build: `${buildBase}:${device}:${os_version}`,
+      device,
+      browser_version,
+    }
+  } else {
+    const os = process.env.BROWSERSTACK_OS || 'Windows'
+    const browser_version = process.env.BROWSERSTACK_BROWSER_VERSION || '10'
+    capabilities = {
+      ...capabilities,
+      build: `${buildBase}:${browser_version}:${os}:${os_version}`,
+      os,
+      browser_version,
+    }
   }
 
   await selenium(

@@ -1,0 +1,99 @@
+name: Testing on devices
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        id: ["windows:ie:11", "macos:safari:13", "windows:chrome:81", "iphone:iphonexs:13", "android:pixel3:9", "ubuntu:node:10", "windows:node:12", "macos:node:14", "rn:android", "rn:ios"]
+        include:
+          - id: windows:ie:11
+            os: ubuntu-latest
+            node-version: 14
+            type: browser
+            browser_os: Windows
+            browser_os_version: 10
+            browser: Internet Explorer
+            browser_version: 11
+          - id: macos:safari:13
+            os: ubuntu-latest
+            node-version: 14
+            type: browser
+            browser_os: OS X
+            browser_os_version: Catalina
+            browser: Safari
+            browser_version: 13
+          - id: windows:chrome:81
+            os: ubuntu-latest
+            node-version: 14
+            type: browser
+            browser_os: Windows
+            browser_os_version: 10
+            browser: Chrome
+            browser_version: 81
+          - id: macos:safari:13
+            os: ubuntu-latest
+            node-version: 14
+            type: browser
+            browser_os: OS X
+            browser_os_version: Catalina
+            browser: Safari
+            browser_version: 13
+          - id: iphone:iphonexs:13
+            os: ubuntu-latest
+            node-version: 14
+            type: browser
+            browser_os_version: 13
+            browser: iPhone
+            device: iPhone XS
+          - id: android:pixel3:9
+            os: ubuntu-latest
+            node-version: 14
+            type: browser
+            browser_os_version: 13
+            browser: android
+            device: Pixel 3
+          - id: ubuntu:node:10
+            os: ubuntu-latest
+            type: node
+            node-version: 10
+          - id: windows:node:12
+            os: windows-latest
+            type: node
+            node-version: 12
+          - id: macos:node:latest
+            os: macos-latest
+            type: node
+            node-version: 14
+          - id: rn:android
+            os: ubuntu-latest
+            node-version: 14
+            type: react-native
+            system: android
+            device: Google Pixel 3
+            os_version: 9
+          - id: rn:ios
+            os: macos-latest
+            node-version: 14
+            type: react-native
+            system: ios
+            device: iPhone XS
+            os_version: 12
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm i
+    - run: npm run build
+    - run: ./e2e/e2e
+      env:
+        GITHUB_CONTEXT: ${{ toJson(matrix) }}

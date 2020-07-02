@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+const { logExec } = require('./lib/exec.js')
+const path = require('path')
+;(async () => {
+  const context = JSON.parse(process.env.GITHUB_CONTEXT)
+  switch (context.type) {
+    case 'browser':
+      await logExec('./browser-stack', [], {
+        cwd: __dirname,
+        env: {
+          ...process.env,
+          BROWSERSTACK_OS: context.browser_os,
+          BROWSERSTACK_OS_VERSION: context.browser_os_version,
+          BROWSERSTACK_BROWSER_NAME: context.browser,
+          BROWSERSTACK_BROWSER_VERSION: context.browser_version,
+          BROWSERSTACK_DEVICE: context.device
+        }
+      })
+      break
+    case 'node':
+      await logExec('./node', [path.resolve(__dirname, '..', 'dist', 'test', 'index.js')], {
+        cwd: __dirname
+      })
+      break
+    case 'react-native':
+      await logExec('./react-native', [context.system], {
+        cwd: __dirname,
+        env: {
+          ...process.env,
+          BROWSERSTACK_DEVICE: context.device,
+          BROWSERSTACK_OS_VERSION: context.os_version
+        }
+      })
+      break
+    default:
+      throw new Error(`Unknown type: ${context.type}`)
+  }
+})()
+  .then(
+    ({ finished }) => {
+      process.exit(finished)
+    },
+    err => {
+      console.error(err.stack)
+      process.exit(2)
+    }
+  )
