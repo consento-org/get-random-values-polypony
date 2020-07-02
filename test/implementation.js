@@ -61,10 +61,11 @@ module.exports = function (name) {
   const array = new ArrayBuffer(SAMPLES)
   testInput('DataView', new DataView(array))
 
-  testOffset('small data', 48, 16, 16)
-  testOffset('zero offset', 48, 0, 16)
-  testOffset('full length', 48, 16, 48 - 16)
-  testOffset('big offset', (65536 * 2.5) | 0, (65536 * 0.5) | 0, (65536 * 1.2) | 0)
+  testOffset('small data', new Uint8Array(48), 16, 16)
+  testOffset('zero offset', new Uint8Array(48), 0, 16)
+  testOffset('full length', new Uint8Array(48), 16, 48 - 16)
+  testOffset('big offset', new Uint8Array((65536 * 2.5) | 0), (65536 * 0.5) | 0, (65536 * 1.2) | 0)
+  testOffset('int32 array', new Int32Array(12), 16, 16)
 
   return
   function testInput (type, input) {
@@ -73,9 +74,9 @@ module.exports = function (name) {
       t.end()
     })
   }
-  function testOffset (name, total, offset, length) {
+  function testOffset (name, original, offset, length) {
+    const total = original.length
     test(name + ' - offset: ' + offset + '/' + length + ' of ' + total, function (t) {
-      const original = new Uint8Array(total)
       const input = new Uint8Array(original.buffer, offset, length)
       let after
       let afterStr
@@ -84,10 +85,12 @@ module.exports = function (name) {
       if (offset > 0) {
         before = getRandomValues(new Uint8Array(original.buffer, 0, offset))
         beforeStr = uintstr(before)
+        t.ok(stats(before).avgDiff !== 0, 'before needs to be filled')
       }
       if (length === 0 || length > 0) {
         after = getRandomValues(new Uint8Array(original.buffer, offset + length))
         afterStr = uintstr(after)
+        t.ok(stats(after).avgDiff !== 0, 'after needs to be filled')
       }
       getRandomValues(input)
       if (before) {
