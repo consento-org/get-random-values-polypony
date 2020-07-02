@@ -47,6 +47,8 @@ const selenium = require('./selenium-system.js')
     }
   }
 
+  console.log({ capabilities })
+
   await selenium(
     builder => builder
       .usingServer(browserstackURL)
