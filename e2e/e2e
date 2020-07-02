@@ -17,6 +17,11 @@ const path = require('path')
         }
       })
       break
+    case 'node':
+      await logExec('./node', [path.resolve(__dirname, '..', 'dist', 'test', 'index.js')], {
+        cwd: __dirname
+      })
+      break
     case 'react-native':
       await logExec('./react-native', [context.system], {
         cwd: __dirname,
