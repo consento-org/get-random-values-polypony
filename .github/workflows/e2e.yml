@@ -48,7 +48,7 @@ jobs:
             os: ubuntu-latest
             node-version: 14
             type: browser
-            browser_os_version: 9
+            browser_os_version: 9.0
             browser: android
             device: Google Pixel 3
           - id: ubuntu:node:10
