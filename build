@@ -1,0 +1,61 @@
+#!/usr/bin/env/node
+const del = require('del')
+const cpy = require('cpy')
+const globby = require('globby')
+const { writeFile, mkdir } = require('fs').promises
+
+async function babelBuild (patterns) {
+  let start = Date.now()
+  console.log('# babel:start')
+  const babel = require('@babel/core')
+  console.log(`# babel:config:load [${Date.now() - start}ms]`)
+  start = Date.now()
+
+  const opts = babel.loadOptionsSync({
+    sourceMaps: true,
+    presets: [
+      [require('babel-preset-minify'), {
+        keepFnName: true,
+        mangle: false
+      }]
+    ]
+  })
+  console.log(`# babel:config:loaded [${Date.now() - start}ms]`)
+  const logFile = file => () => {
+    console.log(`→ ${file} [${Date.now() - start}ms]`)
+  }
+  const { writeFile } = require('fs').promises
+  const files = await globby(patterns)
+  await Promise.all(files.map(file => {
+    return babel.transformFileAsync(file, opts)
+      .then(({ map, code }) => Promise.all([
+        writeFile(`./dist/${file}`, code).then(logFile(file)),
+        writeFile(`./dist/${file}.map`, JSON.stringify(map)).then(logFile(`${file}.map`))
+      ]))
+  }))
+}
+
+;(async () => {
+  const dist = `${__dirname}/dist`
+  try {
+    await del(dist)
+  } catch (_) {}
+  await mkdir(`${dist}/test`, { recursive: true })
+  await babelBuild(['*.js', 'test/*.js'])
+  console.log('# copy:files')
+  await cpy(['Readme.md', 'LICENSE', '*.podspec', 'ios/**', 'android/**'], dist)
+  console.log('# package.json adjustment')
+  const pkg = require('./package.json')
+  delete pkg.private
+  await writeFile(`${dist}/package.json`, JSON.stringify(pkg, null, 2))
+})()
+  .then(
+    () => {
+      console.log('# build:done')
+      process.exit(0)
+    },
+    err => {
+      console.error(err.stack)
+      process.exit(2)
+    }
+  )
