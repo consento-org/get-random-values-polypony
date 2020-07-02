@@ -14,6 +14,7 @@ jobs:
         id: ["windows:ie:11", "windows:edge:18", "windows:edge:latest", "macos:safari:13", "macos:firefox:latest", "windows:chrome:81", "iphone:iphonexs:13", "android:pixel3:9", "ubuntu:node:6", "ubuntu:node:8", "ubuntu:node:10", "windows:node:12", "macos:node:14", "rn:android", "rn:ios"]
         include:
           - id: windows:ie:11
+            build: true
             os: ubuntu-latest
             node-version: 14
             type: browser
@@ -22,6 +23,7 @@ jobs:
             browser: IE
             browser_version: latest
           - id: windows:edge:18
+            build: true
             os: ubuntu-latest
             node-version: 14
             type: browser
@@ -30,6 +32,7 @@ jobs:
             browser: Edge
             browser_version: "18.0"
           - id: windows:edge:latest
+            build: true
             os: ubuntu-latest
             node-version: 14
             type: browser
@@ -38,6 +41,7 @@ jobs:
             browser: Edge
             browser_version: latest
           - id: macos:safari:13
+            build: true
             os: ubuntu-latest
             node-version: 14
             type: browser
@@ -46,6 +50,7 @@ jobs:
             browser: Safari
             browser_version: 13
           - id: macos:firefox:latest
+            build: true
             os: ubuntu-latest
             node-version: 14
             type: browser
@@ -54,6 +59,7 @@ jobs:
             browser: Firefox
             browser_version: latest
           - id: windows:chrome:81
+            build: true
             os: ubuntu-latest
             node-version: 14
             type: browser
@@ -62,6 +68,7 @@ jobs:
             browser: Chrome
             browser_version: 81
           - id: iphone:iphonexs:13
+            build: true
             os: ubuntu-latest
             node-version: 14
             type: browser
@@ -69,6 +76,7 @@ jobs:
             browser: iPhone
             device: iPhone XS
           - id: android:pixel3:9
+            build: true
             os: ubuntu-latest
             node-version: 14
             type: browser
@@ -76,26 +84,32 @@ jobs:
             browser: android
             device: Google Pixel 3
           - id: ubuntu:node:6
+            build: false
             os: ubuntu-latest
             type: node
             node-version: 6
           - id: ubuntu:node:8
+            build: false
             os: ubuntu-latest
             type: node
             node-version: 8
           - id: ubuntu:node:10
+            build: true
             os: ubuntu-latest
             type: node
             node-version: 10
           - id: windows:node:12
+            build: true
             os: windows-latest
             type: node
             node-version: 12
           - id: macos:node:14
+            build: true
             os: macos-latest
             type: node
             node-version: 14
           - id: rn:android
+            build: true
             os: ubuntu-latest
             node-version: 14
             type: react-native
@@ -103,6 +117,7 @@ jobs:
             device: Google Pixel 3
             os_version: "9.0"
           - id: rn:ios
+            build: true
             os: macos-latest
             node-version: 14
             type: react-native
@@ -118,14 +133,15 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install dependencies
       run: npm i
+    - name: Run without compiling
+      run: node e2e/node test/index.js
+      if: ${{ !matrix.build }}
     - name: Build dist
       run: npm run build
-    - name: Run on node
-      run: node e2e/node dist/test/index.js
-      if: ${{ matrix.type == 'node' }}
+      if: ${{ matrix.build }}
     - name: Run on device
       run: node e2e/e2e
-      if: ${{ matrix.type != 'node' }}
+      if: ${{ matrix.build }}
       env:
         GITHUB_CONTEXT: ${{ toJson(matrix) }}
         BROWSERSTACK_USER: ${{ secrets.BROWSERSTACK_USER }}
