@@ -69,7 +69,7 @@ jobs:
             type: react-native
             system: android
             device: Google Pixel 3
-            os_version: 9
+            os_version: "9.0"
           - id: rn:ios
             os: macos-latest
             node-version: 14
