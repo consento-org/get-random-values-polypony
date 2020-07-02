@@ -22,15 +22,16 @@ jobs:
             browser_os_version: 10
             browser: IE
             browser_version: latest
-          - id: windows:edge:18
-            build: true
-            os: ubuntu-latest
-            node-version: 14
-            type: browser
-            browser_os: Windows
-            browser_os_version: 10
-            browser: Edge
-            browser_version: "18.0"
+          # TODO: fix edge 18
+          # - id: windows:edge:18
+          #   build: true
+          #   os: ubuntu-latest
+          #   node-version: 14
+          #   type: browser
+          #   browser_os: Windows
+          #   browser_os_version: 10
+          #   browser: Edge
+          #   browser_version: "18.0"
           - id: windows:edge:latest
             build: true
             os: ubuntu-latest
