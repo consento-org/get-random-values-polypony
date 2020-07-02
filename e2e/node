@@ -3,10 +3,10 @@
 const crypto = require('crypto')
 const path = require('path')
 const randomName = crypto.randomFillSync
-  ? (/^v8\./.test(process.version)
-    ? 'getRandomValuesNodeEq8'
-    : 'getRandomValuesNodeGt8'
+  ? (
+    /^v(\d+)/.exec(process.version)[1] < 9 ? 'getRandomValuesRandomFillUint8'
+    : 'getRandomValuesRandomFill'
   )
-  : 'getRandomValuesNodeLt8'
+  : 'getRandomValuesRandomBytes'
 
 require(path.resolve(process.cwd(), process.argv[2]))(randomName)

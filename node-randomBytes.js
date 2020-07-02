@@ -8,7 +8,7 @@ function randomFillUint8 (input, bytes) {
   return input
 }
 
-module.exports = function getRandomValuesNodeLt8 (input) {
+module.exports = function getRandomValuesRandomBytes (input) {
   const bytes = crypto.randomBytes(input.byteLength)
   if (input instanceof Uint8Array) {
     return randomFillUint8(input, bytes)
