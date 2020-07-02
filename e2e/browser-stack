@@ -33,8 +33,7 @@ const selenium = require('./selenium-system.js')
     capabilities = {
       ...capabilities,
       build: `${buildBase}:${device}:${os_version}`,
-      device,
-      browser_version,
+      device
     }
   } else {
     const os = process.env.BROWSERSTACK_OS || 'Windows'
