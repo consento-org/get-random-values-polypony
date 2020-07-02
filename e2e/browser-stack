@@ -50,15 +50,13 @@ const selenium = require('./selenium-system.js')
 
   console.log({ capabilities })
 
-  await selenium(
+  return await selenium(
     builder => builder
       .usingServer(browserstackURL)
       .withCapabilities(capabilities)
   )
 })().then(
-  failed => {
-    process.exit(failed ? 1 : 0)
-  },
+  exitCode => process.exit(exitCode),
   err => {
     console.error(err)
     process.exit(2)

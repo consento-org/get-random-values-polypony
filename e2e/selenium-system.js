@@ -85,6 +85,7 @@ module.exports = async prepareBuilder => {
         }, 10)
       })
     })
+  let exit = 0
   try {
     console.log('## Starting Selenium')
     await driver
@@ -94,9 +95,11 @@ module.exports = async prepareBuilder => {
     return await readInput(Date.now() + TIMEOUT)
   } catch (err) {
     console.error(err)
+    exit = 1
   } finally {
     await driver.quit()
   }
+  return exit
 }
 
 function runBrowserify (files) {
