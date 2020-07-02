@@ -11,7 +11,7 @@
     "lint": "standard",
     "build": "node ./build",
     "test": "npm run lint && npm run test",
-    "test:unit": "node e2e/node '../test'",
+    "test:unit": "node e2e/node test/index.js",
     "test:browser:local": "npm run build && ./e2e/browser-local",
     "test:browser:stack": "npm run build && ./e2e/browser-stack",
     "test:node": "npm run build && node e2e/node '../dist/test/index.js'",
