@@ -33,6 +33,7 @@ const selenium = require('./selenium-system.js')
     capabilities = {
       ...capabilities,
       build: `${buildBase}:${device}:${os_version}`,
+      realMobile: true,
       device
     }
   } else {
