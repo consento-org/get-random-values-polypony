@@ -37,14 +37,6 @@ jobs:
             browser_os_version: 10
             browser: Chrome
             browser_version: 81
-          - id: macos:safari:13
-            os: ubuntu-latest
-            node-version: 14
-            type: browser
-            browser_os: OS X
-            browser_os_version: Catalina
-            browser: Safari
-            browser_version: 13
           - id: iphone:iphonexs:13
             os: ubuntu-latest
             node-version: 14
@@ -67,7 +59,7 @@ jobs:
             os: windows-latest
             type: node
             node-version: 12
-          - id: macos:node:latest
+          - id: macos:node:14
             os: macos-latest
             type: node
             node-version: 14
@@ -92,8 +84,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm i
-    - run: npm run build
-    - run: ./e2e/e2e
+    - name: Install dependencies
+      run: npm i
+    - name: Build dist
+      run: npm run build
+    - name: Run on device
+      run: ./e2e/e2e
       env:
         GITHUB_CONTEXT: ${{ toJson(matrix) }}
