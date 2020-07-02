@@ -38,12 +38,13 @@ async function babelBuild (patterns) {
 ;(async () => {
   const dist = `${__dirname}/dist`
   try {
+    console.log('# clean')
     await del(dist)
   } catch (_) {}
   await mkdir(`${dist}/test`, { recursive: true })
   await babelBuild(['*.js', 'test/*.js'])
-  console.log('# copy:files')
-  await cpy(['Readme.md', 'LICENSE', '*.podspec', 'ios/**', 'android/**'], dist)
+  console.log('# copy:start')
+  await cpy(['Readme.md', 'LICENSE', '*.podspec', 'ios/**', 'android/**'], dist, { parents: true })
   console.log('# package.json adjustment')
   const pkg = require('./package.json')
   delete pkg.private
