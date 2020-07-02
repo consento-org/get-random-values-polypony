@@ -32,25 +32,25 @@
   "dependencies": {
     "globby": "^11.0.1"
   },
-  "devDependencies": {
-    "@babel/cli": "^7.10.1",
-    "@babel/core": "^7.10.2",
+  "optionalDependencies": {
     "@leichtgewicht/quickhost": "^1.1.0",
-    "babel-preset-minify": "^0.5.1",
     "browserify": "^16.5.1",
     "chromedriver": "^83.0.0",
-    "cpy": "^8.1.0",
     "cross-fetch": "^3.0.4",
-    "del": "^5.1.0",
     "form-data": "^3.0.0",
-    "fresh-tape": "^5.0.2",
     "geckodriver": "^1.19.1",
     "ngrok": "^3.2.7",
     "selenium-webdriver": "^4.0.0-alpha.7",
     "sourceify": "^1.0.0",
     "standard": "^14.3.4",
-    "wd": "^1.12.1",
-    "wdio": "^4.0.0"
+    "wd": "^1.12.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "babel-preset-minify": "^0.5.1",
+    "del": "^5.1.0",
+    "cpy": "^8.1.0",
+    "fresh-tape": "^5.0.2"
   },
   "directories": {
     "test": "test"
