@@ -11,16 +11,24 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        id: ["windows:ie:11", "macos:safari:13", "windows:chrome:81", "iphone:iphonexs:13", "android:pixel3:9", "ubuntu:node:10", "windows:node:12", "macos:node:14", "rn:android", "rn:ios"]
+        id: ["windows:edge:18", "windows:edge:84", "macos:safari:13", "macos:firefox:latest", "windows:chrome:81", "iphone:iphonexs:13", "android:pixel3:9", "ubuntu:node:10", "windows:node:12", "macos:node:14", "rn:android", "rn:ios"]
         include:
-          - id: windows:ie:11
+          - id: windows:edge:18
             os: ubuntu-latest
             node-version: 14
             type: browser
             browser_os: Windows
             browser_os_version: 10
-            browser: Internet Explorer
-            browser_version: 11
+            browser: Edge
+            browser_version: "18.0"
+          - id: windows:edge:84
+            os: ubuntu-latest
+            node-version: 14
+            type: browser
+            browser_os: Windows
+            browser_os_version: 10
+            browser: Edge
+            browser_version: "84.0"
           - id: macos:safari:13
             os: ubuntu-latest
             node-version: 14
@@ -29,6 +37,14 @@ jobs:
             browser_os_version: Catalina
             browser: Safari
             browser_version: 13
+          - id: macos:firefox:latest
+            os: ubuntu-latest
+            node-version: 14
+            type: browser
+            browser_os: OS X
+            browser_os_version: Catalina
+            browser: Firefox
+            browser_version: latest
           - id: windows:chrome:81
             os: ubuntu-latest
             node-version: 14
