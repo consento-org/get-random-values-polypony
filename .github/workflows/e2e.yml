@@ -50,7 +50,7 @@ jobs:
             type: browser
             browser_os_version: 13
             browser: android
-            device: Pixel 3
+            device: Google Pixel 3
           - id: ubuntu:node:10
             os: ubuntu-latest
             type: node
