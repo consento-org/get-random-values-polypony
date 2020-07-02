@@ -2,7 +2,7 @@
 const del = require('del')
 const cpy = require('cpy')
 const globby = require('globby')
-const { writeFile, mkdir } = require('fs').promises
+const { writeFileSync, mkdirSync } = require('fs')
 
 async function babelBuild (patterns) {
   let start = Date.now()
@@ -21,17 +21,18 @@ async function babelBuild (patterns) {
     ]
   })
   console.log(`# babel:config:loaded [${Date.now() - start}ms]`)
-  const logFile = file => () => {
+  const logFile = file => {
     console.log(`→ ${file} [${Date.now() - start}ms]`)
   }
-  const { writeFile } = require('fs').promises
   const files = await globby(patterns)
   await Promise.all(files.map(file => {
     return babel.transformFileAsync(file, opts)
-      .then(({ map, code }) => Promise.all([
-        writeFile(`./dist/${file}`, code).then(logFile(file)),
-        writeFile(`./dist/${file}.map`, JSON.stringify(map)).then(logFile(`${file}.map`))
-      ]))
+      .then(({ map, code }) => {
+        writeFileSync(`./dist/${file}`, code)
+        logFile(file)
+        writeFileSync(`./dist/${file}.map`, JSON.stringify(map))
+        logFile(`${file}.map`)
+      })
   }))
 }
 
@@ -41,7 +42,8 @@ async function babelBuild (patterns) {
     console.log('# clean')
     await del(dist)
   } catch (_) {}
-  await mkdir(`${dist}/test`, { recursive: true })
+  mkdirSync(dist)
+  mkdirSync(`${dist}/test`)
   await babelBuild(['*.js', 'test/*.js'])
   console.log('# copy:start')
   await cpy(['Readme.md', 'LICENSE', '*.podspec', 'ios/**', 'android/**'], dist, { parents: true })
@@ -49,7 +51,7 @@ async function babelBuild (patterns) {
   const pkg = require('./package.json')
   delete pkg.private
   delete pkg.optionalDependencies // Only used for development
-  await writeFile(`${dist}/package.json`, JSON.stringify(pkg, null, 2))
+  writeFileSync(`${dist}/package.json`, JSON.stringify(pkg, null, 2))
 })()
   .then(
     () => {
