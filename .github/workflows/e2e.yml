@@ -41,7 +41,7 @@ jobs:
             os: ubuntu-latest
             node-version: 14
             type: browser
-            browser_os_version: 13
+            browser_os_version: 12
             browser: iPhone
             device: iPhone XS
           - id: android:pixel3:9
