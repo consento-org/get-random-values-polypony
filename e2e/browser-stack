@@ -28,7 +28,7 @@ const selenium = require('./selenium-system.js')
     'browserstack.video': false,
     'browserstack.debug': true
   }
-  if (browserName === 'android' || browserName === 'ios') {
+  if (browserName === 'android' || browserName === 'iPhone') {
     const device = process.env.BROWSERSTACK_DEVICE
     capabilities = {
       ...capabilities,
