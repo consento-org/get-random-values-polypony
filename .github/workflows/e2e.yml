@@ -92,3 +92,7 @@ jobs:
       run: ./e2e/e2e
       env:
         GITHUB_CONTEXT: ${{ toJson(matrix) }}
+        BROWSERSTACK_USER: ${{ secrets.BROWSERSTACK_USER }}
+        BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+        QUICKHOST_SECRET: ${{ secrets.QUICKHOST_SECRET }}
+        QUICKHOST_SERVER: ${{ secrets.QUICKHOST_SERVER }}
