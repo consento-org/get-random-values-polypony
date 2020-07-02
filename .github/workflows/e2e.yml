@@ -86,7 +86,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Setup windows bash
       run: npm config set script-shell "C:\\Program Files (x86)\\git\\bin\\bash.exe"
-      if: ${{ matrix.os != 'windows' }}
+      if: ${{ matrix.os == 'windows' }}
     - name: Install dependencies
       run: npm i
     - name: Build dist
