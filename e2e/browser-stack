@@ -22,6 +22,7 @@ const selenium = require('./selenium-system.js')
   const buildBase = `${runId}:browser:${browserName}`
   let capabilities = {
     name: package.name,
+    project: package.name,
     os_version,
     browserName,
     'browserstack.console': 'verbose',
