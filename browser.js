@@ -20,6 +20,16 @@ function getRandomValuesBrowser (input) {
   return input
 }
 getRandomValuesBrowser.name = 'getRandomValuesBrowser' // IE 11
-getRandomValuesBrowser.polyfill = function () {}
+getRandomValuesBrowser.polyfill = function () {
+  if (window.crypto === undefined) {
+    // Internet explorer 11 should get the getRandomValues method
+    // as well, if polyfill is required.
+    window.crypto = {
+      getRandomValues: function (input) {
+        return base.getRandomValues(input)
+      }
+    }
+  }
+}
 
 module.exports = getRandomValuesBrowser

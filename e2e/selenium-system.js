@@ -42,9 +42,9 @@ module.exports = async prepareBuilder => {
         }
       </style>
       <script type="text/javascript">
-        window.addEventListener('error', function(e) { 
-          console.log('!!')
-          element.value += '\\n' + (err.stack || err)
+        var element = document.getElementById('output')
+        window.addEventListener('error', function(err) { 
+          element.value += '\\n' + (err.stack || err.message || err) + '\\n\\n'
           document.title = 'failed: true'
         }, false);
       </script>

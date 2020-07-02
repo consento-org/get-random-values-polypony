@@ -48,6 +48,7 @@ module.exports = function (name) {
   testInput('Int32Array', new Int32Array(SAMPLES / 4))
   testInput('Float32Array', new Float32Array(SAMPLES / 4))
   testInput('Float64Array', new Float64Array(SAMPLES / 8))
+  testInput('large Uint8Array', new Uint8Array(65536 * 2.5))
   const array = new ArrayBuffer(SAMPLES)
   testInput('DataView', new DataView(array))
 
@@ -62,6 +63,8 @@ module.exports = function (name) {
 function stats (parts) {
   let max = Number.NEGATIVE_INFINITY
   let min = Number.POSITIVE_INFINITY
+  let prev
+  let totalDiff = 0
   for (let i = 0; i < parts.length; i++) {
     const value = parts[i]
     if (value > max) {
@@ -70,8 +73,12 @@ function stats (parts) {
     if (value < min) {
       min = value
     }
+    if (prev !== undefined) {
+      totalDiff += Math.abs(prev - value)
+    }
+    prev = value
   }
-  return { min: min, max: max, diff: Math.abs(max - min) }
+  return { min: min, max: max, avgDiff: totalDiff / parts.length, diff: Math.abs(max - min) }
 }
 
 function testRandomOutput (t, input, getRandomValues) {
@@ -82,10 +89,13 @@ function testRandomOutput (t, input, getRandomValues) {
   const unit = 1000 / valueMax
   const lowerThreshold = 0x40404040
   const upperThreshold = 0xc0c0c0c0
+  const diffByValMin = 0.25
   const runStats = stats(new Uint32Array(input.buffer))
   const min = runStats.min
   const max = runStats.max
   const diff = runStats.diff
+  const diffByVal = runStats.avgDiff / 0xFFFFFFFF
+  t.ok(diffByVal >= diffByValMin, 'average difference by value: ' + diffByVal + ' >= ' + diffByValMin)
   t.ok(min >= valueMin, 'lower bounds: ' + min + ' >= ' + valueMin)
   t.ok(min < lowerThreshold, 'lower threshold: ' + min + ' > ' + lowerThreshold)
   t.ok(max <= valueMax, 'upper bounds: ' + max + ' <= ' + valueMax)

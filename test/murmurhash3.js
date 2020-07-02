@@ -1,6 +1,9 @@
 const test = require('fresh-tape')
-const { xor } = require('../long.js')
-const { murmurhash3Long, murmurhash3String } = require('../murmurhash3.js')
+const lng = require('../long.js')
+const xor = lng.xor
+const murmur = require('../murmurhash3.js')
+const murmurhash3Long = murmur.murmurhash3Long
+const murmurhash3String = murmur.murmurhash3String
 const TMP = { low: 0|0, high: 0|0 }
 const TMP2 = { low: 0|0, high: 0|0 }
 const TMP3 = { low: 0|0, high: 0|0 }

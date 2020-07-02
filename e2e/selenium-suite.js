@@ -25,10 +25,4 @@ harness.onFinish(function () {
 })
 document.title = 'running tests...'
 
-window.addEventListener('error', function(e) { 
-  console.log('!!')
-  element.value += '\n' + (err.stack || err)
-  document.title = 'failed: true'
-}, false);
-
 require('../dist/test')('getRandomValuesBrowser')

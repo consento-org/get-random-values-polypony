@@ -1,8 +1,26 @@
 const test = require('fresh-tape')
-const { add, subtract, negate, and, multiply, xor, not, shiftLeft, shiftRight, shiftRightUnsigned, compare, isZero, isOdd, toNumber, fromInt, fromNumber, lt, fromFloat } = require('../long.js')
+const long = require('../long.js')
+const add = long.add
+const subtract = long.subtract
+const negate = long.negate
+const and = long.and
+const multiply = long.multiply
+const xor = long.xor
+const not = long.not
+const shiftLeft = long.shiftLeft
+const shiftRight = long.shiftRight
+const shiftRightUnsigned = long.shiftRightUnsigned
+const compare = long.compare
+const isZero = long.isZero
+const isOdd = long.isOdd
+const toNumber = long.toNumber
+const fromInt = long.fromInt
+const fromNumber = long.fromNumber
+const lt = long.lt
+const fromFloat = long.fromFloat
+
 const verbose = true
 const TMP = fromInt(0, false)
-
 function numbers (array) {
   const result = []
   for (let i = 0; i < array.length; i += 2) {
@@ -871,7 +889,7 @@ function toStr (long) {
 }
 
 test('negate', function (t) {
-  const negBits = function (low, high, unsigned) { return negate({ low, high }, TMP, unsigned) }
+  const negBits = function (low, high, unsigned) { return negate({ low: low, high: high }, TMP, unsigned) }
   const negInt = function (num, unsigned) { return negate(fromInt(num, unsigned), TMP, unsigned) }
   t.deepEquals(negInt(1), fromInt(-1), verbose && 'negate(1)')
   t.deepEquals(negInt(-1), fromInt(1), verbose && 'negate(-1)')
@@ -882,7 +900,7 @@ test('negate', function (t) {
 test('is*', function (t) {
   const result = {}
   const expected = {}
-  for (const long of NUMBERS) {
+  NUMBERS.forEach(function (long) {
     const longStr = toStr(long)
     result[longStr] = {
       isZero: isZero(long),
@@ -892,7 +910,7 @@ test('is*', function (t) {
       isZero: long.low === 0 && long.high === 0,
       isOdd: (long.low & 1) !== 0
     }
-  }
+  })
   t.deepEquals(result, expected, 'is* operations')
   t.end()
 })
@@ -926,7 +944,7 @@ test('compare', function (t) {
 test('bit operations', function (t) {
   let result
   let expected
-  for (const long of NUMBERS) {
+  NUMBERS.forEach(function (long) {
     result = {
       not: not(long, TMP)
     }
@@ -934,14 +952,14 @@ test('bit operations', function (t) {
       not: { low: ~long.low, high: ~long.high }
     }
     const longStr = toStr(long)
-    for (const other of NUMBERS) {
+    NUMBERS.forEach(function (other) {
       const otherStr = toStr(other)
       result['& ' + otherStr] = and(long, other, {})
       expected['& ' + otherStr] = { low: long.low & other.low, high: long.high & other.high }
       // result['| ' + otherStr] = or(long, other, {})
       result['^ ' + otherStr] = xor(long, other, {})
       expected['^ ' + otherStr] = { low: long.low ^ other.low, high: long.high ^ other.high }
-    }
+    })
     shiftOps(long, 0, {
       shiftLeft: long,
       shiftRight: long,
@@ -968,7 +986,7 @@ test('bit operations', function (t) {
       shiftRightUnsigned: long
     })
     t.deepEquals(result, expected, verbose && 'shift operations for ' + longStr)
-  }
+  })
   t.end()
 
   function shiftOps (long, len, shiftExpected) {
@@ -1023,12 +1041,12 @@ test('subtract', function (t) {
     const longStr = toStr(long)
     const result = {}
     const expected = {}
-    for (const other of NUMBERS) {
+    NUMBERS.forEach(function (other) {
       const otherStr = toStr(other)
       result[otherStr] = subtract(long, other, { low: 0, high: 0 }, false)
       expected[otherStr] = SUBTRACT_RESULTS[count]
       count++
-    }
+    })
     t.deepEquals(result, expected, verbose && '#' + i + ' subtract(' + longStr + ', x, false)')
   }
   t.end()
