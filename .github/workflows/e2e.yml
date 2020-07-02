@@ -121,7 +121,7 @@ jobs:
     - name: Build dist
       run: npm run build
     - name: Run on node
-      run: node e2e/node ../dist/test/index.js
+      run: node e2e/node dist/test/index.js
       if: ${{ matrix.type == 'node' }}
     - name: Run on device
       run: node e2e/e2e
