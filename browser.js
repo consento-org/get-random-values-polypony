@@ -6,7 +6,7 @@ function getRandomValuesBrowser (input) {
   const buffer = input.buffer
   if (n <= MAX_SIZE) {
     base.getRandomValues(
-      (input instanceof Float32Array || input instanceof Float64Array || input instanceof DataView || window.msCrypto && input instanceof Uint8ClampedArray)
+      (input instanceof Float32Array || input instanceof Float64Array || input instanceof DataView || (window.msCrypto || !!window.StyleMedia) && input instanceof Uint8ClampedArray)
       ? new Uint8Array(buffer, offset, n)
       : base.getRandomValues(input)
     )
