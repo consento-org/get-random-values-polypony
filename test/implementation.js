@@ -44,11 +44,11 @@ module.exports = function (name) {
     } catch (_) {}
     if (base.BigInt64Array) {
       try {
-        crypto.getRandomValues(new BigInt64Array(10))
+        crypto.getRandomValues(new base.BigInt64Array(10))
         t.fail('BigInt64Array is supposed to throw')
       } catch (_) {}
       try {
-        crypto.getRandomValues(new BigUint64Array(10))
+        crypto.getRandomValues(new base.BigUint64Array(10))
         t.fail('BigUint64Array is supposed to throw')
       } catch (_) {}
     }
