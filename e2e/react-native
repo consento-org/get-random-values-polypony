@@ -260,7 +260,6 @@ const createServerAsync = function (listener, port) {
       } else {
         formData.append('data', JSON.stringify({ url: buildDetails.appUrl }))
       }
-      console.log({ formdData: formData.getBuffer().toString() })
       const headers = new Headers(formData.getHeaders())
       headers.append('Authorization', 'Basic ' + Buffer.from(bs.user + ":" + bs.key).toString('base64'))
       console.log('## Uploading file to browserstack')
