@@ -46,8 +46,8 @@ function getRandomValuesBrowser (input) {
           )
         )
       )
-      ? new Uint8Array(buffer, offset, n)
-      : input
+        ? new Uint8Array(buffer, offset, n)
+        : input
     )
   } else {
     for (let i = 0; i < n; i += MAX_SIZE) {
