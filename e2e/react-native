@@ -203,7 +203,7 @@ const createServerAsync = function (listener, port) {
         ).then(
           data =>
             console.log(
-              data.jobs?.filter(job => job.id === 'cf1ac83d-94a8-4570-804b-29cb184d4466')[0]?.artifacts.url
+              data.jobs?.filter(job => job.id === '${build}')[0]?.artifacts.url
             )
         )
       `], { cwd: root }).promise()).trim()
