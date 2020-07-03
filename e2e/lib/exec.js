@@ -16,28 +16,41 @@ const exec = function (command, args, opts) {
   spawned.on('exit', code => {
     proc.exit = code
     ;trigger && trigger()
-  }) 
+  })
+
+  const asyncIter = async function * (opts = {}) {
+    while (proc.exit === null || buf.length > 0) {
+      do {
+        const index = buf.indexOf('\n')
+        if (index === -1) {
+          yield buf
+          buf = ''
+        } else {
+          yield buf.substr(0, index)
+          buf = buf.substr(index + 1)
+        }
+      } while (buf.length > 0)
+      await new Promise(resolve => {
+        trigger = resolve
+      })
+    }
+    if (opts.noError !== true && proc.exit !== 0) {
+      throw new Error(`Error: Command ended with exit code: ${proc.exit}`)
+    }
+  }
 
   const proc = {
-    [Symbol.asyncIterator]: async function * (opts = {}) {
-      while (proc.exit === null || buf.length > 0) {
-        do {
-          const index = buf.indexOf('\n')
-          if (index === -1) {
-            yield buf
-            buf = ''
-          } else {
-            yield buf.substr(0, index)
-            buf = buf.substr(index + 1)
-          }
-        } while (buf.length > 0)
-        await new Promise(resolve => {
-          trigger = resolve
-        })
+    [Symbol.asyncIterator]: asyncIter,
+    async promise () {
+      const lines = []
+      for await (const line of asyncIter({ noError: true })) {
+        lines.push(line)
       }
-      if (opts.noError !== true && proc.exit !== 0) {
-        throw new Error(`Error: Command ended with exit code: ${proc.exit}`)
+      const data = lines.join('\n')
+      if (proc.exit !== 0) {
+        throw new Error(data)
       }
+      return data
     },
     exit: null
   }
