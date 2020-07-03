@@ -316,7 +316,8 @@ const createServerAsync = function (listener, port) {
     throw err
   } finally {
     process.removeListener('uncaughtException', _reject)
-    driver && driver.quit()
+    console.log('## driver:quit')
+    await driver && driver.quit()
     console.log('## ngrok:disconnect')
     await ngrok.disconnect()
     await ngrok.kill()
