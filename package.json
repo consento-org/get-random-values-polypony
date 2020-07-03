@@ -15,6 +15,8 @@
     "test": "npm run lint && npm run test",
     "test:unit": "node e2e/node test/index.js",
     "test:browser:local": "npm run build && ./e2e/browser-local",
+    "test:browser:local:firefox": "npm run test:browser:local -- firefox",
+    "test:browser:local:chrome": "npm run test:browser:local -- chrome",
     "test:browser:stack": "npm run build && ./e2e/browser-stack",
     "test:node": "npm run build && node e2e/node dist/test/index.js",
     "test:rn:android": "node e2e/react-native android",
