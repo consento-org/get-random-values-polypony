@@ -124,7 +124,15 @@ const createServerAsync = function (listener, port) {
     }
   }
   console.log(`## react-native:npm install`)
-  await logExec('npm', ['i'], { cwd: `${__dirname}/rntape` })
+  const rnPkg = require(`${__dirname}/rntape/package.json`)
+  delete rnPkg.dependencies[package.name]
+  await writeFile(`${__dirname}/rntape/package.json`, JSON.stringify(rnPkg, null, 2) + '\n')
+  try {
+    await logExec('npm', ['i'], { cwd: `${__dirname}/rntape` })
+  } finally {
+    rnPkg.dependencies[package.name] = ''
+    await writeFile(`${__dirname}/rntape/package.json`, JSON.stringify(rnPkg, null, 2) + '\n')
+  }
   console.log(`## react-native:preparing-dep [target=${target}]`)
   await mkdir(path.dirname(target), { recursive: true })
   console.log(`## react-native:copy-build [src=./dist target=${target}]`)
