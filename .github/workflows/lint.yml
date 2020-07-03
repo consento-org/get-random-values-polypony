@@ -20,3 +20,5 @@ jobs:
       run: npm i
     - name: Linting
       run: npm run lint
+    - name: Typings
+      run: npm run typings

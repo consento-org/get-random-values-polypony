@@ -46,7 +46,7 @@ async function babelBuild (patterns) {
   mkdirSync(`${dist}/test`)
   await babelBuild(['*.js', 'test/*.js'])
   console.log('# copy:start')
-  await cpy(['Readme.md', 'LICENSE', '*.podspec', 'ios/**', 'android/**'], dist, { parents: true })
+  await cpy(['Readme.md', 'LICENSE', '*.podspec', 'index.d.ts', 'ios/**', 'android/**'], dist, { parents: true })
   console.log('# package.json adjustment')
   const pkg = require('./package.json')
   delete pkg.private
