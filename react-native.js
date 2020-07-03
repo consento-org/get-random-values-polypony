@@ -18,6 +18,7 @@ if (base && base.getRandomValues) {
     return input
   }
 } else {
+  console.log({ window.Expo })
   const seed = entropyFromUUID(
     ('Expo' in window && window.Expo.Constants.sessionId)
     || (nativeModule && nativeModule.newUUID())
@@ -37,7 +38,7 @@ if (base && base.getRandomValues) {
           err => console.warn(`[WARNING] Error received when looking for strong entropy, using pretty-strong entropy: ${err}`)
         )
     } else {
-      console.warn(`[WARNING] Can not retreive very strong entropy, using pretty-strong entropy: ${err}`)
+      console.warn(`[WARNING] No means to retreive very strong entropy, using pretty-strong entropy.`)
     }
   }
 }
