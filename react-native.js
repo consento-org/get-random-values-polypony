@@ -43,11 +43,11 @@ if (base && base.getRandomValues) {
   }
 }
 impl.polyfill = function () {
-  if (!('crypto' in global)) {
-    global.crypto = {}
+  if (!('crypto' in window)) {
+    window.crypto = {}
   }
-  if (!('getRandomValues' in global.crypto)) {
-    global.crypto.getRandomValues = require('./browserLimitations.js')(impl)
+  if (!('getRandomValues' in window.crypto)) {
+    window.crypto.getRandomValues = require('./browserLimitations.js')(impl)
   }
 }
 
