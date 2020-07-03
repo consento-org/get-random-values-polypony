@@ -1,10 +1,12 @@
 const crypto = require('crypto')
+const isLegacyRandomFill = /^v(\d+)/.exec(process.version)[1] < 9
 const getRandomValues = crypto.randomFillSync
   ? (
-    /^v(\d+)/.exec(process.version)[1] < 9 ? require('./node-randomFillUint8.js')
+    isLegacyRandomFill ? require('./node-randomFillUint8.js')
     : require('./node-randomFill.js')
   )
   : require('./node-randomBytes.js')
+
 getRandomValues.polyfill = function () {
   if (!('crypto' in global)) {
     global.crypto = {}
