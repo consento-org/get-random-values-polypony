@@ -1,16 +1,20 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
 const React = require('react')
 const {
   ScrollView,
   Text
 } = require('react-native')
 let App
+
+const bodyGray = {
+  backgroundColor: '#dddddd'
+}
+const bodyGreen = {
+  backgroundColor: '#ddffdd'
+}
+const bodyRed = {
+  backgroundColor: '#ffdddd'
+}
+
 try {
   const { publicURL } = require('./test.json')
 
@@ -21,16 +25,6 @@ try {
 
   let output = `Running...\n`
   let listeners = new Set()
-
-  const bodyGray = {
-    backgroundColor: '#dddddd'
-  }
-  const bodyGreen = {
-    backgroundColor: '#ddffdd'
-  }
-  const bodyRed = {
-    backgroundColor: '#ffdddd'
-  }
 
   let started = false
   let finished = -1
@@ -142,10 +136,11 @@ try {
   }
 } catch (err) {
   App = () => {
+    console.error(err)
     return (
       <>
-        <ScrollView contentInsetAdjustmentBehavior="automatic" style={test.finished === 0 ? bodyGreen : test.finished === 1 ? bodyRed : bodyGray}>
-          <Text selectable={ true }>{ String(err) }</Text>
+        <ScrollView contentInsetAdjustmentBehavior="automatic" style={bodyRed}>
+          <Text selectable={ true }>{ String(err.stack || err.message || err) }</Text>
         </ScrollView>
       </>
     )
