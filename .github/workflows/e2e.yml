@@ -133,6 +133,14 @@ jobs:
             system: ios
             device: iPhone XS
             os_version: 12
+          - id: rn:expo
+            build: true
+            os: macos-latest
+            node-version: 14
+            type: react-native
+            system: expo
+            device: Google Pixel 3
+            os_version: "9.0"
 
     steps:
     - uses: actions/checkout@v2
@@ -145,6 +153,9 @@ jobs:
     - name: Run without compiling
       run: node e2e/node test/index.js
       if: ${{ !matrix.build }}
+    - name: Login to expo
+      run: npx expo login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }}
+      if: ${{ matrix.system == 'expo' }}
     - name: Build dist
       run: npm run build
       if: ${{ matrix.build }}

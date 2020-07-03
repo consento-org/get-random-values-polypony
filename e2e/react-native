@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const wd = require('wd')
-const { logExec } = require('./lib/exec.js')
+const { logExec,exec } = require('./lib/exec.js')
 const { execSync } = require('child_process')
 const del = require('del')
 const path = require('path')
@@ -9,8 +9,20 @@ const { fetch, Headers } = require('cross-fetch')
 const FormData = require('form-data')
 const { createServer } = require('http')
 const { createReadStream } = require('fs')
-const { writeFile, mkdir, readFile } = require('fs').promises
+const { writeFile, mkdir } = require('fs').promises
 const package = require('../package.json')
+
+async function parseExpoBuild (command, args, opts) {
+  let build
+  for await (const line of exec(command, args, opts)) {
+    const parts = /builds\/([0-9a-f-]+)/ig.exec(line)
+    if (parts) {
+      build = parts[1]
+    }
+    console.log(line)
+  }
+  return build
+}
 
 /*
 function mergeIterators (streams) {
@@ -79,18 +91,18 @@ const createServerAsync = function (listener, port) {
   const browserStack = bs.user !== undefined
   const system = process.argv[2]
   const android = system === 'android'
+  const ios = system === 'ios'
+  const expo = system === 'expo'
 
-  if (!android && process.argv[2] !== 'ios') {
-    throw new Error('First argument needs to be "ios" or "android"')
+  if (!android && !ios && !expo) {
+    throw new Error('First argument needs to be "ios" or "android" or "expo"')
   }
-
-  // const ios = system === 'ios' // Unused at the moment, maybe useful at other times
 
   const runId = process.env.GITHUB_RUN_ID || 'dirty'
 
   let device = process.env.BROWSERSTACK_DEVICE
   if (!device) {
-    if (android) {
+    if (!ios) {
       device = 'Google Pixel 3'
     } else {
       device = 'iPhone XS'
@@ -99,7 +111,7 @@ const createServerAsync = function (listener, port) {
   
   let os_version = process.env.BROWSERSTACK_OS_VERSION
   if (!os_version) {
-    if (android) {
+    if (!ios) {
       os_version = '9.0'
     } else {
       os_version = '12'
@@ -114,7 +126,8 @@ const createServerAsync = function (listener, port) {
     _resolve = resolve
     _reject = reject
   })
-  const target = `${__dirname}/rntape/node_modules/${package.name}`
+  const root = `${__dirname }/${expo ? 'expotape' : 'rntape'}`
+  const target = `${root}/node_modules/${package.name}`
   try {
     await del(target)
     console.log(`## react-native:clearing-old-dep [target=${target}]`)
@@ -124,19 +137,19 @@ const createServerAsync = function (listener, port) {
     }
   }
   console.log(`## react-native:npm install`)
-  const rnPkg = require(`${__dirname}/rntape/package.json`)
+  const rnPkg = require(`${root}/package.json`)
   delete rnPkg.dependencies[package.name]
-  await writeFile(`${__dirname}/rntape/package.json`, JSON.stringify(rnPkg, null, 2) + '\n')
+  await writeFile(`${root}/package.json`, JSON.stringify(rnPkg, null, 2) + '\n')
   try {
-    await logExec('npm', ['i'], { cwd: `${__dirname}/rntape` })
+    await logExec('npm', ['i'], { cwd: `${root}` })
   } finally {
     rnPkg.dependencies[package.name] = ''
-    await writeFile(`${__dirname}/rntape/package.json`, JSON.stringify(rnPkg, null, 2) + '\n')
+    await writeFile(`${root}/package.json`, JSON.stringify(rnPkg, null, 2) + '\n')
   }
   console.log(`## react-native:preparing-dep [target=${target}]`)
   await mkdir(path.dirname(target), { recursive: true })
   console.log(`## react-native:copy-build [src=./dist target=${target}]`)
-  await execSync(`cp -r ${__dirname}/../dist ${target}`)
+  execSync(`cp -r ${__dirname}/../dist ${target}`)
   console.log("## local-server:start")
   const { server, close } = await createServerAsync((req, res) => {
     const result = []
@@ -161,7 +174,7 @@ const createServerAsync = function (listener, port) {
     console.log(`## ngrok:connected [publicURL=${publicURL}]`)
     console.log('## react-native:build:prepare')
     await writeFile(
-      `${__dirname}/rntape/test.json`,
+      `${root}/test.json`,
       JSON.stringify({
         publicURL
       }, null, 2)
@@ -169,26 +182,51 @@ const createServerAsync = function (listener, port) {
     let buildDetails
     if (android) {
       console.log('## react-native:build:android')
-      await logExec('./gradlew', ['assembleRelease'], { cwd: `${__dirname}/rntape/android` })
+      await logExec('./gradlew', ['assembleRelease'], { cwd: `${root}/android` })
       buildDetails = {
-        app: `${__dirname}/rntape/android/app/build/outputs/apk/release/app-release.apk`,
+        app: `${root}/android/app/build/outputs/apk/release/app-release.apk`,
         capabilities: {
           device,
           os_version
         }
       }
-      // execSync('react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/')
-    } else {
+    }
+    if (expo) {
+      console.log('## react-native:build:expo')
+      const build = await parseExpoBuild('npx', ['expo', 'build:android', '-t', 'apk', '--no-publish', '--non-interactive'], { cwd: root })
+      console.log({ build })
+      const apk = (await exec('node', ['-e', `
+        const xdl = require('@expo/xdl');
+        xdl.Project.getBuildStatusAsync(
+          '.',
+          { platform: 'android', current: false }
+        ).then(
+          data =>
+            console.log(
+              data.jobs?.filter(job => job.id === 'cf1ac83d-94a8-4570-804b-29cb184d4466')[0]?.artifacts.url
+            )
+        )
+      `], { cwd: root }).promise()).trim()
+      console.log({ apk })
+      buildDetails = {
+        appUrl: apk,
+        capabilities: {
+          device,
+          os_version
+        }
+      }
+    }
+    if (ios) {
       console.log('## react-native:build:ios:pod')
-      await logExec('pod', ['install', '--clean-install'], { cwd: `${__dirname}/rntape/ios` })
+      await logExec('pod', ['install', '--clean-install'], { cwd: `${root}/ios` })
       console.log('## react-native:build:ios:app')
-      console.log(execSync(`mkdir -p ${__dirname}/rntape/ios/build`).toString())
+      console.log(execSync(`mkdir -p ${root}/ios/build`).toString())
       await logExec(
         'xcodebuild',
         [
           'clean',
           'build',
-          '-workspace', `${__dirname}/rntape/ios/rntape.xcworkspace`,
+          '-workspace', `${root}/ios/rntape.xcworkspace`,
           '-configuration', 'Release',
           '-scheme', 'rntape',
           '-arch', 'arm64',
@@ -198,16 +236,16 @@ const createServerAsync = function (listener, port) {
           'CODE_SIGN_ENTITLEMENTS=""',
           'CODE_SIGNING_ALLOWED="NO"'
         ],
-        { cwd: `${__dirname}/rntape/ios` }
+        { cwd: `${root}/ios` }
       )
       console.log('## react-native:build:ios:ipa')
-      await logExec('rm', ['-rf', 'ipa'], { cwd: `${__dirname}/rntape/ios/build` })
-      await logExec('mkdir', ['-p', 'build/ipa/Payload'], { cwd: `${__dirname}/rntape/ios` })
-      await logExec('cp', ['-r', 'build/Build/Products/Release-iphoneos/rntape.app', 'build/ipa/Payload/rntape.app'], { cwd: `${__dirname}/rntape/ios` })
-      await logExec('rm', ['-f', 'rntape-1.ipa'], { cwd: `${__dirname}/rntape/ios/build` })
-      await logExec('zip', ['-r', '../rntape-1.ipa', 'Payload'], { cwd: `${__dirname}/rntape/ios/build/ipa` })
+      await logExec('rm', ['-rf', 'ipa'], { cwd: `${root}/ios/build` })
+      await logExec('mkdir', ['-p', 'build/ipa/Payload'], { cwd: `${root}/ios` })
+      await logExec('cp', ['-r', 'build/Build/Products/Release-iphoneos/rntape.app', 'build/ipa/Payload/rntape.app'], { cwd: `${root}/ios` })
+      await logExec('rm', ['-f', 'rntape-1.ipa'], { cwd: `${root}/ios/build` })
+      await logExec('zip', ['-r', '../rntape-1.ipa', 'Payload'], { cwd: `${root}/ios/build/ipa` })
       buildDetails = {
-        app: `${__dirname}/rntape/ios/build/rntape-1.ipa`,
+        app: `${root}/ios/build/rntape-1.ipa`,
         capabilities: {
           device,
           os_version
@@ -216,8 +254,13 @@ const createServerAsync = function (listener, port) {
     }
     if (browserStack) {
       const formData = new FormData()
-      formData.append('file', createReadStream(buildDetails.app))
-      formData.append('data', '{}')
+      if (buildDetails.app) {
+        formData.append('file', createReadStream(buildDetails.app))
+        formData.append('data', '{}')
+      } else {
+        formData.append('data', JSON.stringify({ url: buildDetails.appUrl }))
+      }
+      console.log({ formdData: formData.getBuffer().toString() })
       const headers = new Headers(formData.getHeaders())
       headers.append('Authorization', 'Basic ' + Buffer.from(bs.user + ":" + bs.key).toString('base64'))
       console.log('## Uploading file to browserstack')
@@ -258,11 +301,12 @@ const createServerAsync = function (listener, port) {
     } else {
       if (android) {
         console.log('## react-native:install')
-        await logExec('adb', ['install', '-r', 'app/build/outputs/apk/release/app-release.apk'], { cwd: `${__dirname}/rntape/android` })
+        await logExec('adb', ['install', '-r', 'app/build/outputs/apk/release/app-release.apk'], { cwd: `${root}/android` })
         console.log('## MANUAL ACTION REQUIRED: open the react-native app "rntape" on the device.')
       } else {
-
+        console.log('## MANUAL ACTION REQUIRED: Install the app and start it')
       }
+      // TODO ios & expo local install
     }
     // TODO use ./rntape/android/app/build/android-sourcemap.js for good error messages
     console.log((await response).output)

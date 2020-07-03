@@ -19,7 +19,7 @@ if (base && base.getRandomValues) {
   }
 } else {
   const seed = entropyFromUUID(
-    ('expo' in window && window.expo.Constants.sessionId)
+    ('Expo' in window && window.Expo.Constants.sessionId)
     || (nativeModule && nativeModule.newUUID())
   )
 
@@ -29,16 +29,15 @@ if (base && base.getRandomValues) {
 
   impl = require('./createRandomSeed.js')(seed)
   
-  if ('expo' in window) {
-    if ('random' in window.expo) {
-      window.expo.random.getRandomBytesAsync(8)
+  if ('Expo' in window) {
+    if ('random' in window.Expo) {
+      window.Expo.random.getRandomBytesAsync(8)
         .then(
           bytes => impl.increaseEntropy(bytes),
           err => console.warn(`[WARNING] Error received when looking for strong entropy, using pretty-strong entropy: ${err}`)
         )
     } else {
       console.warn(`[WARNING] Can not retreive very strong entropy, using pretty-strong entropy: ${err}`)
-      console.log(Object.keys(window.expo))
     }
   }
 }
