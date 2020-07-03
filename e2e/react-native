@@ -193,9 +193,9 @@ const createServerAsync = function (listener, port) {
     }
     if (expo) {
       console.log('## react-native:build:expo')
-      const build = await parseExpoBuild('npx', ['expo', 'build:android', '-t', 'apk', '--no-publish', '--non-interactive'], { cwd: root })
+      const build = await parseExpoBuild('npx', ['expo', 'build:android', '-t', 'app-bundle', '--non-interactive'], { cwd: root })
       console.log({ build })
-      const apk = (await exec('node', ['-e', `
+      const app = (await exec('node', ['-e', `
         const xdl = require('@expo/xdl');
         xdl.Project.getBuildStatusAsync(
           '.',
@@ -207,9 +207,9 @@ const createServerAsync = function (listener, port) {
             )
         )
       `], { cwd: root }).promise()).trim()
-      console.log({ apk })
+      console.log({ app })
       buildDetails = {
-        appUrl: apk,
+        appUrl: app,
         capabilities: {
           device,
           os_version
