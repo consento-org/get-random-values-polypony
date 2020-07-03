@@ -154,7 +154,7 @@ jobs:
       run: node e2e/node test/index.js
       if: ${{ !matrix.build }}
     - name: Login to expo
-      run: npx expo login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }}
+      run: npx expo-cli login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }}
       if: ${{ matrix.system == 'expo' }}
     - name: Build dist
       run: npm run build
