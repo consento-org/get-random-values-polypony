@@ -3,6 +3,7 @@ const base = window.crypto
 const MAX_SIZE = 65536
 const entropyFromUUID = require('./entropyFromUUID.js')
 const nativeModule = ('GetRandomValuesPolyPony' in rn.NativeModules && rn.NativeModules.GetRandomValuesPolyPony)
+const min = Math.min // babel bug
 
 let impl
 if (base && base.getRandomValues) {
@@ -11,13 +12,8 @@ if (base && base.getRandomValues) {
     if (input.byteLength <= MAX_SIZE) {
       return base.getRandomValues(input)
     }
-    const temp = new Uint8Array(MAX_SIZE)
-    const buffer = input.buffer
-    const inputUint8 = input instanceof Uint8Array ? input : new Uint8Array(buffer)
-    for (let i = 0; i < inputUint8.byteLength; i += MAX_SIZE) {
-      for (let j = 0; j < MAX_SIZE; j++) {
-        inputUint8[i + j] = temp[j]
-      }
+    for (let i = 0; i < n; i += MAX_SIZE) {
+      crypto.getRandomValues(new Uint8Array(input.buffer, i + input.byteOffset, end, min(input.byteLength - i, MAX_SIZE)))
     }
     return input
   }
