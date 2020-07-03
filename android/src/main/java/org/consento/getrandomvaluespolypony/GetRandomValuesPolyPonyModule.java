@@ -15,8 +15,6 @@ import java.util.UUID;
 import android.util.Base64;
 
 class GetRandomValuesPolyPonyModule extends ReactContextBaseJavaModule {
-  private static final String UUID_KEY = "uuid";
-
   public GetRandomValuesPolyPonyModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
@@ -26,15 +24,8 @@ class GetRandomValuesPolyPonyModule extends ReactContextBaseJavaModule {
     return "GetRandomValuesPolyPony";
   }
 
-  @ReactMethod
-  public void newUUID(Callback success) {
-    success.invoke(null, UUID.randomUUID().toString());
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
-    constants.put(UUID_KEY, UUID.randomUUID().toString());
-    return constants;
+  @ReactMethod(isBlockingSynchronousMethod=true)
+  public String newUUID() {
+    return UUID.randomUUID().toString();
   }
 }

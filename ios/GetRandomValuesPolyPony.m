@@ -22,20 +22,9 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
-RCT_EXPORT_METHOD(newUUID:callback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString*, newUUID)
 {
-    callback(@[[NSNull null], [[NSUUID UUID] UUIDString]]);
-}
-
-- (NSDictionary *)constantsToExport
-{
-    return @{
-        @"uuid": [[NSUUID UUID] UUIDString]
-    };
-};
-
-+ (BOOL)requiresMainQueueSetup {
-    return YES;
+    return [[NSUUID UUID] UUIDString];
 }
 
 @end

@@ -37,7 +37,7 @@ if (base && base.getRandomValues) {
 } else {
   const seed = entropyFromUUID(
     ('expo' in window && window.expo.Constants.sessionId)
-    || (nativeModule && nativeModule.uuid)
+    || (nativeModule && nativeModule.newUUID())
   )
 
   if (seed === null) {
@@ -57,10 +57,6 @@ if (base && base.getRandomValues) {
       console.warn(`[WARNING] Can not retreive very strong entropy, using pretty-strong entropy: ${err}`)
       console.log(Object.keys(window.expo))
     }
-  } else if (nativeModule) {
-    nativeModule.newUUID(function (_, uuid) {
-      impl.increaseEntropy(entropyFromUUID(uuid))
-    })
   }
 }
 impl.polyfill = function () {
