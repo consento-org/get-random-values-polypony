@@ -12,17 +12,51 @@ function uintstr (uint8Array) {
 }
 
 module.exports = function (name) {
+  getRandomValues.polyfill()
+
+  const base = (typeof window !== 'undefined' ? window : global)
+  const crypto = base.crypto
+
   test(name + ' - polyfill', function (t) {
-    getRandomValues.polyfill()
-    const base = typeof window !== 'undefined' ? window : global
-    t.ok(typeof base.crypto.getRandomValues === 'function', 'crypto.getRandomValues should exist')
+    t.ok(typeof crypto.getRandomValues === 'function', 'crypto.getRandomValues should exist')
     if (name !== 'getRandomValuesBrowser') {
-      t.equals(base.crypto.getRandomValues.name, name + 'Limited', 'the polyfill support should be limited')
+      t.equals(crypto.getRandomValues.name, name + 'Limited', 'the polyfill support should be limited')
     }
     testRandomOutput(t, new Uint8Array(1000), function (input) {
-      return base.crypto.getRandomValues(input)
+      return crypto.getRandomValues(input)
     })
+    crypto.getRandomValues(new Uint8Array(65536))
+    try {
+      crypto.getRandomValues(new Uint8Array(65536 + 1))
+      t.fail('too large uint8array')
+    } catch (_) {}
+    try {
+      crypto.getRandomValues(new Float32Array(10))
+      t.fail('Float32Array is supposed to throw')
+    } catch (_) {}
+    try {
+      crypto.getRandomValues(new Float64Array(10))
+      t.fail('Float64Array is supposed to throw')
+    } catch (_) {}
+    try {
+      crypto.getRandomValues(new DataView(new ArrayBuffer(10)))
+      t.fail('DataView is supposed to throw')
+    } catch (_) {}
+    if (base.BigInt64Array) {
+      try {
+        crypto.getRandomValues(new BigInt64Array(10))
+        t.fail('BigInt64Array is supposed to throw')
+      } catch (_) {}
+      try {
+        crypto.getRandomValues(new BigUint64Array(10))
+        t.fail('BigUint64Array is supposed to throw')
+      } catch (_) {}
+    }
     t.end()
+  })
+
+  testInputs(' - polyfilled', function (input) {
+    return crypto.getRandomValues(input)
   })
 
   test(name + ' - performance', function (t) {
@@ -47,31 +81,41 @@ module.exports = function (name) {
     t.end()
   })
 
-  testInput('Uint8ClampedArray', new Uint8ClampedArray(SAMPLES))
-  testInput('Uint8Array', new Uint8Array(SAMPLES))
-  testInput('Int8Array', new Int8Array(SAMPLES))
-  testInput('Uint16Array', new Uint16Array(SAMPLES / 2))
-  testInput('Int16Array', new Int16Array(SAMPLES / 2))
-  testInput('Uint32Array', new Uint32Array(SAMPLES / 4))
-  testInput('Int32Array', new Int32Array(SAMPLES / 4))
-  testInput('Float32Array', new Float32Array(SAMPLES / 4))
-  testInput('Float64Array', new Float64Array(SAMPLES / 8))
-  testInput('large Uint8Array', new Uint8Array(65536 * 2.5))
-  const array = new ArrayBuffer(SAMPLES)
-  testInput('DataView', new DataView(array))
-
   testOffset('small data', new Uint8Array(48), 16, 16)
   testOffset('zero offset', new Uint8Array(48), 0, 16)
   testOffset('full length', new Uint8Array(48), 16, 48 - 16)
   testOffset('big offset', new Uint8Array((65536 * 2.5) | 0), (65536 * 0.5) | 0, (65536 * 1.2) | 0)
   testOffset('int32 array', new Int32Array(12), 16, 16)
 
-  function testInput (type, input) {
+  testInputs('')
+  testInput('Float32Array', new Float32Array(SAMPLES / 4))
+  testInput('Float64Array', new Float64Array(SAMPLES / 8))
+
+  testInput('DataView', new DataView(new ArrayBuffer(SAMPLES)))
+  testInput('large Uint8Array', new Uint8Array(65536 * 2.5))
+
+  if (base.BigInt64Array) {
+    testInput('BigInt64Array', new base.BigInt64Array(SAMPLES))
+    testInput('BigUint64Array', new base.BigUint64Array(SAMPLES))
+  }
+
+  function testInputs (suffix, override) {
+    testInput('Uint8ClampedArray' + suffix, new Uint8ClampedArray(SAMPLES), override)
+    testInput('Uint8Array' + suffix, new Uint8Array(SAMPLES), override)
+    testInput('Int8Array' + suffix, new Int8Array(SAMPLES), override)
+    testInput('Uint16Array' + suffix, new Uint16Array(SAMPLES / 2), override)
+    testInput('Int16Array' + suffix, new Int16Array(SAMPLES / 2), override)
+    testInput('Uint32Array' + suffix, new Uint32Array(SAMPLES / 4), override)
+    testInput('Int32Array' + suffix, new Int32Array(SAMPLES / 4), override)
+  }
+
+  function testInput (type, input, override) {
     test(name + ' - ' + type, function (t) {
-      testRandomOutput(t, input, getRandomValues)
+      testRandomOutput(t, input, override || getRandomValues)
       t.end()
     })
   }
+
   function testOffset (name, original, offset, length) {
     const total = original.length
     test(name + ' - offset: ' + offset + '/' + length + ' of ' + total, function (t) {
@@ -125,7 +169,7 @@ function stats (parts) {
 
 function testRandomOutput (t, input, getRandomValues) {
   const result = getRandomValues(input)
-  t.same(result, input, 'the value is only filled!')
+  t.same(result, input, 'the input is returned as output')
   const valueMax = 0xffffffff
   const valueMin = 0x00000000
   const unit = 1000 / valueMax
