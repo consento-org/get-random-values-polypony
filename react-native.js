@@ -3,19 +3,6 @@ const base = window.crypto
 const MAX_SIZE = 65536
 const entropyFromUUID = require('./entropyFromUUID.js')
 const nativeModule = ('GetRandomValuesPolyPony' in rn.NativeModules && rn.NativeModules.GetRandomValuesPolyPony)
-console.log({ nativeModule })
-
-function readInt32LE (buffer, offset) {
-  const first = buffer[offset];
-  const last = buffer[offset + 3];
-  if (first === undefined || last === undefined)
-    boundsError(offset, buffer.length - 4);
-
-  return first +
-    buffer[++offset] * 2 ** 8 +
-    buffer[++offset] * 2 ** 16 +
-    (last << 24); // Overflow
-}
 
 let impl
 if (base && base.getRandomValues) {
