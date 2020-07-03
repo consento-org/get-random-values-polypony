@@ -29,9 +29,6 @@
   "author": "Martin Heidegger <martin.heidegger@gmail.com>",
   "nativePackage": true,
   "license": "MIT",
-  "dependencies": {
-    "globby": "^11.0.1"
-  },
   "optionalDependencies": {
     "@leichtgewicht/quickhost": "^1.1.0",
     "browserify": "^16.5.1",
@@ -50,7 +47,8 @@
     "babel-preset-minify": "^0.5.1",
     "del": "^5.1.0",
     "cpy": "^8.1.0",
-    "fresh-tape": "^5.0.2"
+    "fresh-tape": "^5.0.2",
+    "globby": "^11.0.1"
   },
   "directories": {
     "test": "test"
