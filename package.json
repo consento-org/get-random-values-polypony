@@ -1,6 +1,6 @@
 {
   "name": "get-random-values-polypony",
-  "version": "1.0.5",
+  "version": "1.0.0",
   "description": "Synchronous randombytes function that works in node, the browser & react-native!",
   "main": "node.js",
   "private": true,
