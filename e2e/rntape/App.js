@@ -68,7 +68,7 @@ try {
     const renderError = (error, isFatal) =>
       end(1, (isFatal ? '[FATAL] ' : '') + (error.message + '\n' + error.stack + '\n'))
 
-    // global.ErrorUtils.setGlobalHandler(renderError)
+    global.ErrorUtils.setGlobalHandler(renderError)
     /*
     console.error = console.warning = (...args) => {
       const error = args.find(entry => entry instanceof Error)
@@ -89,7 +89,7 @@ try {
     */
     const stream = new Writable({
       write: function (data, _, next) {
-        emit(data.toString())
+        write(data.toString())
         next()
       }
     })
