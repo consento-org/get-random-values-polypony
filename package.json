@@ -10,7 +10,7 @@
   "react-native": "react-native.js",
   "scripts": {
     "lint": "standard",
-    "typings": "npx --quiet -p typescript -p ts-node -c \"ts-node test/typings.ts\"",
+    "typings": "npm run build && npx --quiet -p typescript -p ts-node -c \"ts-node test/typings.ts\"",
     "build": "node ./build",
     "test": "npm run lint && npm run test",
     "test:unit": "node e2e/node test/index.js",
