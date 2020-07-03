@@ -201,7 +201,7 @@ const createServerAsync = function (listener, port) {
         { cwd: `${__dirname}/rntape/ios` }
       )
       console.log('## react-native:build:ios:ipa')
-      await logExec('rm', ['-r', 'ipa'], { cwd: `${__dirname}/rntape/ios/build` })
+      await logExec('rm', ['-rf', 'ipa'], { cwd: `${__dirname}/rntape/ios/build` })
       await logExec('mkdir', ['-p', 'build/ipa/Payload'], { cwd: `${__dirname}/rntape/ios` })
       await logExec('cp', ['-r', 'build/Build/Products/Release-iphoneos/rntape.app', 'build/ipa/Payload/rntape.app'], { cwd: `${__dirname}/rntape/ios` })
       await logExec('rm', ['rntape-1.ipa'], { cwd: `${__dirname}/rntape/ios/build` })
