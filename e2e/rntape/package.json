@@ -10,9 +10,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "fresh-tape": "^5.0.2",
+    "fresh-tape": "^5.0.3",
     "react": "16.11.0",
     "react-native": "0.62.2",
+    "readable-stream": "github:martinheidegger/readable-stream#fix/remove-node-globals",
     "get-random-values-polypony": ""
   },
   "devDependencies": {
