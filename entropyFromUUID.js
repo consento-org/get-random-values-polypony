@@ -13,7 +13,7 @@ module.exports = function entropyFromUUID (uuid) {
   // this algorithm returns a low/high big int of the octets 0-4 and 12-16
   //
   // See: https://tools.ietf.org/html/rfc4122#section-4.4
-  // 
+  //
   const clockSeqHi = parseInt(parts[2], 16)
   if ((clockSeqHi & 32) !== 0 || (clockSeqHi & 64) !== 64) {
     // Invalid uuid

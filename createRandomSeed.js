@@ -10,7 +10,7 @@ const isZero = lng.isZero
 const copy = lng.copy
 const add = lng.add
 const fromFloat = lng.fromFloat
-const Temp = { low: 0|0, high: 0|0 }
+const Temp = { low: 0 | 0, high: 0 | 0 }
 
 function writeUint8 (array, offset, long) {
   const low = long.low
@@ -101,12 +101,12 @@ function getWrite (input) {
 
 function createRandomSeed (seedInput) {
   // Ported from: https://github.com/v8/v8/blob/a3b02dc76d8e8f4e4ee3848fe1e6c009952fc24b/src/base/utils/random-number-generator.cc#L214
-  let state0 = { low: 0|0, high: 0|0 }
+  let state0 = { low: 0 | 0, high: 0 | 0 }
   increaseEntropy(seedInput)
   if (isZero(state0)) {
     throw new Error('Given entropy is not usable for random generation [state0=0]')
   }
-  let state1 = { low: 0|0, high: 0|0 }
+  let state1 = { low: 0 | 0, high: 0 | 0 }
   murmurhash3Long(not(state0, state1), state1)
   if (isZero(state1)) {
     throw new Error('Given entropy is not usable for random generation [state1=0]')
@@ -115,7 +115,7 @@ function createRandomSeed (seedInput) {
   const getRandomValueSeed = function (input) {
     const len = input.byteLength
     const write = getWrite(input)
-    
+
     for (let offset = 0; offset < len;) {
       // XorShift128: Ported from: https://github.com/v8/v8/blob/a3b02dc76d8e8f4e4ee3848fe1e6c009952fc24b/src/base/utils/random-number-generator.h#L119-L128
       xor(state0, shiftLeft(state0, 23, Temp), state0)

@@ -5,10 +5,10 @@ const shiftRightUnsigned = long.shiftRightUnsigned
 const copy = long.copy
 
 // Ported from https://github.com/v8/v8/blob/a3b02dc76d8e8f4e4ee3848fe1e6c009952fc24b/src/base/utils/random-number-generator.cc#L222-L229
-const Multiply1 = { low: 0xFF51AFD7|0, high: 0xED558CCD|0 }
-const Multiply2 = { low: 0xC4CEB9FE|0, high: 0x1A85EC53|0 }
-const Temp = { low: 0|0, high: 0|0 }
-const Temp2 = { low: 0|0, high: 0|0 }
+const Multiply1 = { low: 0xFF51AFD7 | 0, high: 0xED558CCD | 0 }
+const Multiply2 = { low: 0xC4CEB9FE | 0, high: 0x1A85EC53 | 0 }
+const Temp = { low: 0 | 0, high: 0 | 0 }
+const Temp2 = { low: 0 | 0, high: 0 | 0 }
 
 function addChar (code, target, offset) {
   var pos = offset % 8

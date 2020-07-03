@@ -12,13 +12,12 @@ function uintstr (uint8Array) {
 }
 
 module.exports = function (name) {
-
   test(name + ' - polyfill', function (t) {
     getRandomValues.polyfill()
     const base = typeof window !== 'undefined' ? window : global
     t.ok(typeof base.crypto.getRandomValues === 'function', 'crypto.getRandomValues should exist')
     if (name !== 'getRandomValuesBrowser') {
-      t.equals(crypto.getRandomValues.name, name + 'Limited', 'the polyfill support should be limited')
+      t.equals(base.crypto.getRandomValues.name, name + 'Limited', 'the polyfill support should be limited')
     }
     testRandomOutput(t, new Uint8Array(1000), function (input) {
       return base.crypto.getRandomValues(input)
@@ -67,7 +66,6 @@ module.exports = function (name) {
   testOffset('big offset', new Uint8Array((65536 * 2.5) | 0), (65536 * 0.5) | 0, (65536 * 1.2) | 0)
   testOffset('int32 array', new Int32Array(12), 16, 16)
 
-  return
   function testInput (type, input) {
     test(name + ' - ' + type, function (t) {
       testRandomOutput(t, input, getRandomValues)

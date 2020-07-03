@@ -4,9 +4,9 @@ const xor = lng.xor
 const murmur = require('../murmurhash3.js')
 const murmurhash3Long = murmur.murmurhash3Long
 const murmurhash3String = murmur.murmurhash3String
-const TMP = { low: 0|0, high: 0|0 }
-const TMP2 = { low: 0|0, high: 0|0 }
-const TMP3 = { low: 0|0, high: 0|0 }
+const TMP = { low: 0 | 0, high: 0 | 0 }
+const TMP2 = { low: 0 | 0, high: 0 | 0 }
+const TMP3 = { low: 0 | 0, high: 0 | 0 }
 
 const data = [
   { input: { low: 1, high: 0 }, result: { low: 159932351, high: 1569927747 } },
@@ -50,7 +50,7 @@ test('murmurhash3String', function (t) {
     '"abcdefghijklmnop"'
   )
   t.deepEquals(
-    murmurhash3String('abcdefghijkl', TMP), 
+    murmurhash3String('abcdefghijkl', TMP),
     xor(
       murmurhash3Long({ low: 1734697825, high: 1751540834 }, TMP2),
       murmurhash3Long({ low: 27497, high: 27754 }, TMP3),

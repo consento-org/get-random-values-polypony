@@ -9,13 +9,13 @@ const exec = function (command, args, opts) {
   let trigger
   const handleData = data => {
     buf += data.toString()
-    ;trigger && trigger()
+    trigger && trigger()
   }
   spawned.stderr.on('data', handleData)
   spawned.stdout.on('data', handleData)
   spawned.on('exit', code => {
     proc.exit = code
-    ;trigger && trigger()
+    trigger && trigger()
   })
 
   const asyncIter = async function * (opts = {}) {
@@ -58,8 +58,7 @@ const exec = function (command, args, opts) {
 }
 
 const logExec = async function (command, args, opts) {
-  for await (const line of exec(command, args, opts))
-    console.log(line)
+  for await (const line of exec(command, args, opts)) { console.log(line) }
 }
 
 module.exports = {

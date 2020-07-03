@@ -23,12 +23,12 @@ try {
   const tape = require('fresh-tape')
   const { Writable } = require('readable-stream')
 
-  let output = `Running...\n`
-  let listeners = new Set()
+  let output = 'Running...\n'
+  const listeners = new Set()
 
   let started = false
   let finished = -1
-  function start () {
+  const start = () => {
     if (started) return
     started = true
     const emit = (message) => {
@@ -51,7 +51,7 @@ try {
       }
       finished = code
       emit(message + 'Sending to ' + publicURL + '...\n')
-      fetch(publicURL, {
+      window.fetch(publicURL, {
         method: 'post',
         body: JSON.stringify({
           finished,
@@ -128,8 +128,8 @@ try {
     }, [])
     return (
       <>
-        <ScrollView contentInsetAdjustmentBehavior="automatic" style={test.finished === 0 ? bodyGreen : test.finished === 1 ? bodyRed : bodyGray}>
-          <Text selectable={ true }>{ test.output ? test.output : 'Running...\n' }</Text>
+        <ScrollView contentInsetAdjustmentBehavior='automatic' style={test.finished === 0 ? bodyGreen : test.finished === 1 ? bodyRed : bodyGray}>
+          <Text selectable>{test.output ? test.output : 'Running...\n'}</Text>
         </ScrollView>
       </>
     )
@@ -139,8 +139,8 @@ try {
     console.error(err)
     return (
       <>
-        <ScrollView contentInsetAdjustmentBehavior="automatic" style={bodyRed}>
-          <Text selectable={ true }>{ String(err.stack || err.message || err) }</Text>
+        <ScrollView contentInsetAdjustmentBehavior='automatic' style={bodyRed}>
+          <Text selectable>{String(err.stack || err.message || err)}</Text>
         </ScrollView>
       </>
     )
