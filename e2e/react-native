@@ -186,6 +186,7 @@ const createServerAsync = function (listener, port) {
       buildDetails = {
         app: `${root}/android/app/build/outputs/apk/release/app-release.apk`,
         capabilities: {
+          console: true,
           device,
           os_version
         }
@@ -284,6 +285,9 @@ const createServerAsync = function (listener, port) {
         'browserstack.user': bs.user,
         'browserstack.key': bs.key,
         'browserstack.networkLogs': true,
+        'browserstack.console': 'verbose',
+        'browserstack.seleniumLogs': true,
+        console: true,
         project: package.name,
         build,
         name: package.name,

@@ -12,7 +12,7 @@
     "lint": "standard",
     "typings": "npm run build && npx --quiet -p typescript -p ts-node -c \"ts-node test/typings.ts\"",
     "build": "node ./build",
-    "test": "npm run lint && npm run test",
+    "test": "npm run lint && npm run test:node && npm run test:unit",
     "test:unit": "node e2e/node test/index.js",
     "test:browser:local": "npm run build && ./e2e/browser-local",
     "test:browser:local:firefox": "npm run test:browser:local -- firefox",
