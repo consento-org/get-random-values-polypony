@@ -23,7 +23,7 @@ const path = require('path')
       })
       break
     case 'react-native':
-      await logExec('rn-tape', ['run', context.system, './dist', '/test/react-native'], {
+      await logExec('./node_modules/.bin/rn-tape', ['run', context.system, './dist', '/test/react-native'], {
         cwd: path.join(__dirname, '../'),
         env: {
           ...process.env,
