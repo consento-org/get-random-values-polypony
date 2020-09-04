@@ -19,9 +19,9 @@
     "test:browser:local:chrome": "npm run test:browser:local -- chrome",
     "test:browser:stack": "npm run build && ./e2e/browser-stack",
     "test:node": "npm run build && node e2e/node dist/test/index.js",
-    "test:rn:android": "node e2e/react-native android",
-    "test:rn:ios": "node e2e/react-native ios",
-    "test:rn:expo": "node e2e/react-native expo"
+    "test:rn:android": "rn-tape run android ./dist /test/react-native",
+    "test:rn:ios": "rn-tape run ios ./dist /test/react-native",
+    "test:rn:expo": "rn-tape run expo ./dist /test/react-native"
   },
   "keywords": [
     "react-native",
@@ -50,10 +50,11 @@
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "babel-preset-minify": "^0.5.1",
-    "del": "^5.1.0",
     "cpy": "^8.1.0",
+    "del": "^5.1.0",
     "fresh-tape": "^5.0.2",
-    "globby": "^11.0.1"
+    "globby": "^11.0.1",
+    "rn-tape": "^1.0.0-3"
   },
   "directories": {
     "test": "test"
